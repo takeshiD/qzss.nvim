@@ -1,0 +1,2149 @@
+{
+  "screen": {
+    "cols": 165,
+    "rows": 35,
+    "cursor": {
+      "x": 79,
+      "y": 1,
+      "visible": true
+    },
+    "lines": [
+      " 19 impl Default for MyStruct<i32> {                                          │ qzss · lib.rs · treesitter · ? help",
+      " 20     fn default() -> Self {                                                │▸ ◈ Shape [+3] <T>  trait",
+      " 21         Self { value: 0 }                                                 │▸ ◆ MyStruct [+1] <T>  struct",
+      " 22     }                                                                     │▸ ⋄ Mode [+2]  enum",
+      " 23 }                                                                         │▸ ⊃ impl Default for MyStruct<i32> [+1]  impl trait",
+      " 24                                                                           │▸ ⊃ impl<T> Shape<T> for MyStruct<T> [+4] where T: Copy + Display  impl trait",
+      " 25 impl<T> Shape<T> for MyStruct<T>                                          │▸ ⊂ impl<T: Clone> MyStruct<T> [+2]  impl",
+      " 26 where                                                                     │  ƒ largest<T: PartialOrd + Copy>(items: &[T]) -> T  fn",
+      " 27     T: Copy + Display,                                                    │▸ ▣ inner [+1]  mod",
+      " 28 {                                                                         │~",
+      " 29     const SIDES: usize = 4;                                               │~",
+      " 30     type Output = T;                                                      │~",
+      " 31                                                                           │~",
+      " 32     fn area(&self) -> T {                                                 │~",
+      " 33         fn helper<U: Copy>(u: U) -> U {                                   │~",
+      " 34             u                                                             │~",
+      " 35         }                                                                 │~",
+      " 36         helper(self.value)                                                │~",
+      " 37     }                                                                     │~",
+      " 38 }                                                                         │~",
+      " 39                                                                           │~",
+      " 40 impl<T: Clone> MyStruct<T> {                                              │~",
+      " 41     pub fn new(value: T) -> Self {                                        │~",
+      " 42         Self { value }                                                    │~",
+      " 43     }                                                                     │~",
+      " 44                                                                           │~",
+      " 45     pub fn map<U, F>(self, f: F) -> MyStruct<U>                           │~",
+      " 46     where                                                                 │~",
+      " 47         F: FnOnce(T) -> U,                                                │~",
+      " 48     {                                                                     │~",
+      " 49         MyStruct { value: f(self.value) }                                 │~",
+      " 50     }                                                                     │~",
+      " 51 }                                                                         │~",
+      "tests/fixtures/rust/src/lib.rs                              19,1           69% qzss://outline/1 [-]                                                1,1            All",
+      ""
+    ],
+    "exited": null,
+    "exitSignal": null,
+    "bracketedPaste": true,
+    "alternateScreen": true
+  },
+  "styled": [
+    {
+      "row": 0,
+      "col": 0,
+      "text": " 19 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 0,
+      "col": 4,
+      "text": "impl",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b",
+        "bold": true
+      }
+    },
+    {
+      "row": 0,
+      "col": 8,
+      "text": " Default ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 0,
+      "col": 17,
+      "text": "for",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b",
+        "bold": true
+      }
+    },
+    {
+      "row": 0,
+      "col": 20,
+      "text": " MyStruct<i32> {                                          │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 0,
+      "col": 79,
+      "text": " qzss · lib.rs · treesitter · ? help",
+      "style": {
+        "fg": "#9b9ea4",
+        "bg": "#07080d",
+        "bold": true
+      }
+    },
+    {
+      "row": 0,
+      "col": 115,
+      "text": "                                                  ",
+      "style": {
+        "bg": "#07080d"
+      }
+    },
+    {
+      "row": 1,
+      "col": 0,
+      "text": " 20 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 1,
+      "col": 4,
+      "text": "    ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 1,
+      "col": 8,
+      "text": "fn",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b",
+        "bold": true
+      }
+    },
+    {
+      "row": 1,
+      "col": 10,
+      "text": " ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 1,
+      "col": 11,
+      "text": "default",
+      "style": {
+        "fg": "#8cf8f7",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 1,
+      "col": 18,
+      "text": "() -> Self {                                                │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 1,
+      "col": 79,
+      "text": "▸",
+      "style": {
+        "fg": "#8cf8f7",
+        "bg": "#2c2e33"
+      }
+    },
+    {
+      "row": 1,
+      "col": 80,
+      "text": " ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#2c2e33"
+      }
+    },
+    {
+      "row": 1,
+      "col": 81,
+      "text": "◈",
+      "style": {
+        "fg": "#8cf8f7",
+        "bg": "#2c2e33"
+      }
+    },
+    {
+      "row": 1,
+      "col": 82,
+      "text": " ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#2c2e33"
+      }
+    },
+    {
+      "row": 1,
+      "col": 83,
+      "text": "Shape",
+      "style": {
+        "fg": "#8cf8f7",
+        "bg": "#2c2e33"
+      }
+    },
+    {
+      "row": 1,
+      "col": 88,
+      "text": " [+3] <T>",
+      "style": {
+        "fg": "#9b9ea4",
+        "bg": "#2c2e33"
+      }
+    },
+    {
+      "row": 1,
+      "col": 97,
+      "text": "  ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#2c2e33"
+      }
+    },
+    {
+      "row": 1,
+      "col": 99,
+      "text": "trait",
+      "style": {
+        "fg": "#9b9ea4",
+        "bg": "#2c2e33",
+        "italic": true
+      }
+    },
+    {
+      "row": 1,
+      "col": 104,
+      "text": "                                                             ",
+      "style": {
+        "bg": "#2c2e33"
+      }
+    },
+    {
+      "row": 2,
+      "col": 0,
+      "text": " 21 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 2,
+      "col": 4,
+      "text": "        Self { value: 0 }                                                 │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 2,
+      "col": 79,
+      "text": "▸",
+      "style": {
+        "fg": "#8cf8f7",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 2,
+      "col": 80,
+      "text": " ◆ MyStruct",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 2,
+      "col": 91,
+      "text": " [+1] <T>",
+      "style": {
+        "fg": "#9b9ea4",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 2,
+      "col": 100,
+      "text": "  ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 2,
+      "col": 102,
+      "text": "struct",
+      "style": {
+        "fg": "#9b9ea4",
+        "bg": "#14161b",
+        "italic": true
+      }
+    },
+    {
+      "row": 2,
+      "col": 108,
+      "text": "                                                         ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 3,
+      "col": 0,
+      "text": " 22 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 3,
+      "col": 4,
+      "text": "    }                                                                     │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 3,
+      "col": 79,
+      "text": "▸",
+      "style": {
+        "fg": "#8cf8f7",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 3,
+      "col": 80,
+      "text": " ⋄ Mode",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 3,
+      "col": 87,
+      "text": " [+2]",
+      "style": {
+        "fg": "#9b9ea4",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 3,
+      "col": 92,
+      "text": "  ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 3,
+      "col": 94,
+      "text": "enum",
+      "style": {
+        "fg": "#9b9ea4",
+        "bg": "#14161b",
+        "italic": true
+      }
+    },
+    {
+      "row": 3,
+      "col": 98,
+      "text": "                                                                   ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 4,
+      "col": 0,
+      "text": " 23 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 4,
+      "col": 4,
+      "text": "}                                                                         │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 4,
+      "col": 79,
+      "text": "▸",
+      "style": {
+        "fg": "#8cf8f7",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 4,
+      "col": 80,
+      "text": " ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 4,
+      "col": 81,
+      "text": "⊃",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b",
+        "bold": true
+      }
+    },
+    {
+      "row": 4,
+      "col": 82,
+      "text": " ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 4,
+      "col": 83,
+      "text": "impl",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b",
+        "bold": true
+      }
+    },
+    {
+      "row": 4,
+      "col": 87,
+      "text": " ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 4,
+      "col": 88,
+      "text": "Default",
+      "style": {
+        "fg": "#8cf8f7",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 4,
+      "col": 95,
+      "text": " for ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b",
+        "bold": true
+      }
+    },
+    {
+      "row": 4,
+      "col": 100,
+      "text": "MyStruct<i32>",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 4,
+      "col": 113,
+      "text": " [+1]",
+      "style": {
+        "fg": "#9b9ea4",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 4,
+      "col": 118,
+      "text": "  ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 4,
+      "col": 120,
+      "text": "impl trait",
+      "style": {
+        "fg": "#9b9ea4",
+        "bg": "#14161b",
+        "italic": true
+      }
+    },
+    {
+      "row": 4,
+      "col": 130,
+      "text": "                                   ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 5,
+      "col": 0,
+      "text": " 24 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 5,
+      "col": 4,
+      "text": "                                                                          │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 5,
+      "col": 79,
+      "text": "▸",
+      "style": {
+        "fg": "#8cf8f7",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 5,
+      "col": 80,
+      "text": " ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 5,
+      "col": 81,
+      "text": "⊃",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b",
+        "bold": true
+      }
+    },
+    {
+      "row": 5,
+      "col": 82,
+      "text": " ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 5,
+      "col": 83,
+      "text": "impl<T>",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b",
+        "bold": true
+      }
+    },
+    {
+      "row": 5,
+      "col": 90,
+      "text": " ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 5,
+      "col": 91,
+      "text": "Shape<T>",
+      "style": {
+        "fg": "#8cf8f7",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 5,
+      "col": 99,
+      "text": " for ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b",
+        "bold": true
+      }
+    },
+    {
+      "row": 5,
+      "col": 104,
+      "text": "MyStruct<T>",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 5,
+      "col": 115,
+      "text": " [+4] where T: Copy + Display",
+      "style": {
+        "fg": "#9b9ea4",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 5,
+      "col": 144,
+      "text": "  ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 5,
+      "col": 146,
+      "text": "impl trait",
+      "style": {
+        "fg": "#9b9ea4",
+        "bg": "#14161b",
+        "italic": true
+      }
+    },
+    {
+      "row": 5,
+      "col": 156,
+      "text": "         ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 6,
+      "col": 0,
+      "text": " 25 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 6,
+      "col": 4,
+      "text": "impl",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b",
+        "bold": true
+      }
+    },
+    {
+      "row": 6,
+      "col": 8,
+      "text": "<T> Shape<T> ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 6,
+      "col": 21,
+      "text": "for",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b",
+        "bold": true
+      }
+    },
+    {
+      "row": 6,
+      "col": 24,
+      "text": " MyStruct<T>                                          │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 6,
+      "col": 79,
+      "text": "▸",
+      "style": {
+        "fg": "#8cf8f7",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 6,
+      "col": 80,
+      "text": " ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 6,
+      "col": 81,
+      "text": "⊂",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b",
+        "bold": true
+      }
+    },
+    {
+      "row": 6,
+      "col": 82,
+      "text": " ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 6,
+      "col": 83,
+      "text": "impl<T: Clone>",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b",
+        "bold": true
+      }
+    },
+    {
+      "row": 6,
+      "col": 97,
+      "text": " MyStruct<T>",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 6,
+      "col": 109,
+      "text": " [+2]",
+      "style": {
+        "fg": "#9b9ea4",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 6,
+      "col": 114,
+      "text": "  ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 6,
+      "col": 116,
+      "text": "impl",
+      "style": {
+        "fg": "#9b9ea4",
+        "bg": "#14161b",
+        "italic": true
+      }
+    },
+    {
+      "row": 6,
+      "col": 120,
+      "text": "                                             ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 7,
+      "col": 0,
+      "text": " 26 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 7,
+      "col": 4,
+      "text": "where",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b",
+        "bold": true
+      }
+    },
+    {
+      "row": 7,
+      "col": 9,
+      "text": "                                                                     │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 7,
+      "col": 79,
+      "text": " ",
+      "style": {
+        "fg": "#8cf8f7",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 7,
+      "col": 80,
+      "text": " ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 7,
+      "col": 81,
+      "text": "ƒ",
+      "style": {
+        "fg": "#8cf8f7",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 7,
+      "col": 82,
+      "text": " ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 7,
+      "col": 83,
+      "text": "largest",
+      "style": {
+        "fg": "#8cf8f7",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 7,
+      "col": 90,
+      "text": "<T: PartialOrd + Copy>(items: &[T]) -> T",
+      "style": {
+        "fg": "#9b9ea4",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 7,
+      "col": 130,
+      "text": "  ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 7,
+      "col": 132,
+      "text": "fn",
+      "style": {
+        "fg": "#9b9ea4",
+        "bg": "#14161b",
+        "italic": true
+      }
+    },
+    {
+      "row": 7,
+      "col": 134,
+      "text": "                               ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 8,
+      "col": 0,
+      "text": " 27 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 8,
+      "col": 4,
+      "text": "    T: Copy + Display,                                                    │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 8,
+      "col": 79,
+      "text": "▸",
+      "style": {
+        "fg": "#8cf8f7",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 8,
+      "col": 80,
+      "text": " ▣ inner",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 8,
+      "col": 88,
+      "text": " [+1]",
+      "style": {
+        "fg": "#9b9ea4",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 8,
+      "col": 93,
+      "text": "  ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 8,
+      "col": 95,
+      "text": "mod",
+      "style": {
+        "fg": "#9b9ea4",
+        "bg": "#14161b",
+        "italic": true
+      }
+    },
+    {
+      "row": 8,
+      "col": 98,
+      "text": "                                                                   ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 9,
+      "col": 0,
+      "text": " 28 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 9,
+      "col": 4,
+      "text": "{                                                                         │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 9,
+      "col": 79,
+      "text": "~",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 9,
+      "col": 80,
+      "text": "                                                                                     ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 10,
+      "col": 0,
+      "text": " 29 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 10,
+      "col": 4,
+      "text": "    const SIDES: usize = 4;                                               │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 10,
+      "col": 79,
+      "text": "~",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 10,
+      "col": 80,
+      "text": "                                                                                     ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 11,
+      "col": 0,
+      "text": " 30 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 11,
+      "col": 4,
+      "text": "    ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 11,
+      "col": 8,
+      "text": "type",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b",
+        "bold": true
+      }
+    },
+    {
+      "row": 11,
+      "col": 12,
+      "text": " ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 11,
+      "col": 13,
+      "text": "Output",
+      "style": {
+        "fg": "#a6dbff",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 11,
+      "col": 19,
+      "text": " = T;                                                      │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 11,
+      "col": 79,
+      "text": "~",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 11,
+      "col": 80,
+      "text": "                                                                                     ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 12,
+      "col": 0,
+      "text": " 31 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 12,
+      "col": 4,
+      "text": "                                                                          │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 12,
+      "col": 79,
+      "text": "~",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 12,
+      "col": 80,
+      "text": "                                                                                     ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 13,
+      "col": 0,
+      "text": " 32 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 13,
+      "col": 4,
+      "text": "    ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 13,
+      "col": 8,
+      "text": "fn",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b",
+        "bold": true
+      }
+    },
+    {
+      "row": 13,
+      "col": 10,
+      "text": " ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 13,
+      "col": 11,
+      "text": "area",
+      "style": {
+        "fg": "#8cf8f7",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 13,
+      "col": 15,
+      "text": "(&self) -> T {                                                 │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 13,
+      "col": 79,
+      "text": "~",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 13,
+      "col": 80,
+      "text": "                                                                                     ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 14,
+      "col": 0,
+      "text": " 33 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 14,
+      "col": 4,
+      "text": "        ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 14,
+      "col": 12,
+      "text": "fn",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b",
+        "bold": true
+      }
+    },
+    {
+      "row": 14,
+      "col": 14,
+      "text": " ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 14,
+      "col": 15,
+      "text": "helper",
+      "style": {
+        "fg": "#8cf8f7",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 14,
+      "col": 21,
+      "text": "<U: Copy>(u: U) -> U {                                   │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 14,
+      "col": 79,
+      "text": "~",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 14,
+      "col": 80,
+      "text": "                                                                                     ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 15,
+      "col": 0,
+      "text": " 34 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 15,
+      "col": 4,
+      "text": "            u                                                             │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 15,
+      "col": 79,
+      "text": "~",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 15,
+      "col": 80,
+      "text": "                                                                                     ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 16,
+      "col": 0,
+      "text": " 35 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 16,
+      "col": 4,
+      "text": "        }                                                                 │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 16,
+      "col": 79,
+      "text": "~",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 16,
+      "col": 80,
+      "text": "                                                                                     ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 17,
+      "col": 0,
+      "text": " 36 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 17,
+      "col": 4,
+      "text": "        ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 17,
+      "col": 12,
+      "text": "helper",
+      "style": {
+        "fg": "#8cf8f7",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 17,
+      "col": 18,
+      "text": "(self.value)                                                │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 17,
+      "col": 79,
+      "text": "~",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 17,
+      "col": 80,
+      "text": "                                                                                     ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 18,
+      "col": 0,
+      "text": " 37 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 18,
+      "col": 4,
+      "text": "    }                                                                     │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 18,
+      "col": 79,
+      "text": "~",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 18,
+      "col": 80,
+      "text": "                                                                                     ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 19,
+      "col": 0,
+      "text": " 38 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 19,
+      "col": 4,
+      "text": "}                                                                         │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 19,
+      "col": 79,
+      "text": "~",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 19,
+      "col": 80,
+      "text": "                                                                                     ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 20,
+      "col": 0,
+      "text": " 39 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 20,
+      "col": 4,
+      "text": "                                                                          │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 20,
+      "col": 79,
+      "text": "~",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 20,
+      "col": 80,
+      "text": "                                                                                     ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 21,
+      "col": 0,
+      "text": " 40 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 21,
+      "col": 4,
+      "text": "impl",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b",
+        "bold": true
+      }
+    },
+    {
+      "row": 21,
+      "col": 8,
+      "text": "<T: Clone> MyStruct<T> {                                              │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 21,
+      "col": 79,
+      "text": "~",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 21,
+      "col": 80,
+      "text": "                                                                                     ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 22,
+      "col": 0,
+      "text": " 41 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 22,
+      "col": 4,
+      "text": "    ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 22,
+      "col": 8,
+      "text": "pub",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b",
+        "bold": true
+      }
+    },
+    {
+      "row": 22,
+      "col": 11,
+      "text": " ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 22,
+      "col": 12,
+      "text": "fn",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b",
+        "bold": true
+      }
+    },
+    {
+      "row": 22,
+      "col": 14,
+      "text": " ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 22,
+      "col": 15,
+      "text": "new",
+      "style": {
+        "fg": "#8cf8f7",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 22,
+      "col": 18,
+      "text": "(value: T) -> Self {                                        │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 22,
+      "col": 79,
+      "text": "~",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 22,
+      "col": 80,
+      "text": "                                                                                     ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 23,
+      "col": 0,
+      "text": " 42 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 23,
+      "col": 4,
+      "text": "        Self { value }                                                    │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 23,
+      "col": 79,
+      "text": "~",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 23,
+      "col": 80,
+      "text": "                                                                                     ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 24,
+      "col": 0,
+      "text": " 43 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 24,
+      "col": 4,
+      "text": "    }                                                                     │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 24,
+      "col": 79,
+      "text": "~",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 24,
+      "col": 80,
+      "text": "                                                                                     ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 25,
+      "col": 0,
+      "text": " 44 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 25,
+      "col": 4,
+      "text": "                                                                          │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 25,
+      "col": 79,
+      "text": "~",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 25,
+      "col": 80,
+      "text": "                                                                                     ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 26,
+      "col": 0,
+      "text": " 45 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 26,
+      "col": 4,
+      "text": "    ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 26,
+      "col": 8,
+      "text": "pub",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b",
+        "bold": true
+      }
+    },
+    {
+      "row": 26,
+      "col": 11,
+      "text": " ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 26,
+      "col": 12,
+      "text": "fn",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b",
+        "bold": true
+      }
+    },
+    {
+      "row": 26,
+      "col": 14,
+      "text": " ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 26,
+      "col": 15,
+      "text": "map",
+      "style": {
+        "fg": "#8cf8f7",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 26,
+      "col": 18,
+      "text": "<U, F>(self, f: F) -> MyStruct<U>                           │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 26,
+      "col": 79,
+      "text": "~",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 26,
+      "col": 80,
+      "text": "                                                                                     ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 27,
+      "col": 0,
+      "text": " 46 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 27,
+      "col": 4,
+      "text": "    ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 27,
+      "col": 8,
+      "text": "where",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b",
+        "bold": true
+      }
+    },
+    {
+      "row": 27,
+      "col": 13,
+      "text": "                                                                 │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 27,
+      "col": 79,
+      "text": "~",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 27,
+      "col": 80,
+      "text": "                                                                                     ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 28,
+      "col": 0,
+      "text": " 47 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 28,
+      "col": 4,
+      "text": "        F: FnOnce(T) -> U,                                                │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 28,
+      "col": 79,
+      "text": "~",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 28,
+      "col": 80,
+      "text": "                                                                                     ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 29,
+      "col": 0,
+      "text": " 48 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 29,
+      "col": 4,
+      "text": "    {                                                                     │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 29,
+      "col": 79,
+      "text": "~",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 29,
+      "col": 80,
+      "text": "                                                                                     ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 30,
+      "col": 0,
+      "text": " 49 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 30,
+      "col": 4,
+      "text": "        MyStruct { value: ",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 30,
+      "col": 30,
+      "text": "f",
+      "style": {
+        "fg": "#8cf8f7",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 30,
+      "col": 31,
+      "text": "(self.value) }                                 │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 30,
+      "col": 79,
+      "text": "~",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 30,
+      "col": 80,
+      "text": "                                                                                     ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 31,
+      "col": 0,
+      "text": " 50 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 31,
+      "col": 4,
+      "text": "    }                                                                     │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 31,
+      "col": 79,
+      "text": "~",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 31,
+      "col": 80,
+      "text": "                                                                                     ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 32,
+      "col": 0,
+      "text": " 51 ",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 32,
+      "col": 4,
+      "text": "}                                                                         │",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 32,
+      "col": 79,
+      "text": "~",
+      "style": {
+        "fg": "#4f5258",
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 32,
+      "col": 80,
+      "text": "                                                                                     ",
+      "style": {
+        "bg": "#14161b"
+      }
+    },
+    {
+      "row": 33,
+      "col": 0,
+      "text": "tests/fixtures/rust/src/lib.rs                              19,1           69% ",
+      "style": {
+        "fg": "#c4c6cd",
+        "bg": "#2c2e33"
+      }
+    },
+    {
+      "row": 33,
+      "col": 79,
+      "text": "qzss://outline/1 [-]                                                1,1            All",
+      "style": {
+        "fg": "#e0e2ea",
+        "bg": "#4f5258"
+      }
+    },
+    {
+      "row": 34,
+      "col": 0,
+      "text": "                                                                                                                                                                     ",
+      "style": {
+        "bg": "#14161b"
+      }
+    }
+  ]
+}

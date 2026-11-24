@@ -1,0 +1,21 @@
+{
+  "launch": {
+    "argv": ["env", "QZSS_LSP=1", "QZSS_SETUP={\"backends\":[\"lsp\"]}", "nvim", "--clean", "-u", "tests/minimal_init.lua", "tests/fixtures/ts/unicode.ts"],
+    "cols": 140, "rows": 30
+  },
+  "steps": [
+    { "do": "wait_text", "text": "function target", "timeout_ms": 10000 },
+    { "do": "type", "text": ":Qzss" }, { "do": "press", "keys": ["Enter"] },
+    { "do": "wait_text", "text": "· lsp ·", "timeout_ms": 30000 },
+    { "do": "wait_text", "text": "target", "timeout_ms": 30000 },
+    { "do": "capture", "name": "lsp-outline" },
+    { "do": "type", "text": "/target" }, { "do": "press", "keys": ["Enter"] },
+    { "do": "press", "keys": ["Enter"] },
+    { "do": "type", "text": ":lua print('qzss-col='..vim.api.nvim_win_get_cursor(0)[2]..' word='..vim.fn.expand('<cword>'))" },
+    { "do": "press", "keys": ["Enter"] },
+    { "do": "wait_text", "text": "qzss-col=33 word=target", "timeout_ms": 5000 },
+    { "do": "capture", "name": "after-jump" },
+    { "do": "type", "text": ":qa!" }, { "do": "press", "keys": ["Enter"] },
+    { "do": "wait_exit", "exit_code": 0, "timeout_ms": 5000 }
+  ]
+}

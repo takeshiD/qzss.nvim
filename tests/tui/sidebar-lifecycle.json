@@ -1,0 +1,30 @@
+{
+  "launch": { "argv": ["nvim", "--clean", "-u", "tests/minimal_init.lua", "tests/fixtures/rust/src/lib.rs"], "cols": 50, "rows": 14 },
+  "steps": [
+    { "do": "wait_text", "text": "use std::fmt", "timeout_ms": 10000 },
+    { "do": "type", "text": ":QzssOpen!" }, { "do": "press", "keys": ["Enter"] },
+    { "do": "wait_text", "text": "qzss · lib.rs", "timeout_ms": 5000 },
+    { "do": "expect_text", "text": "use std::fmt::Display;" },
+    { "do": "type", "text": ":lua print('src-w='..vim.api.nvim_win_get_width(0))" }, { "do": "press", "keys": ["Enter"] },
+    { "do": "wait_text", "text": "src-w=24", "timeout_ms": 3000 },
+    { "do": "capture", "name": "narrow-50" },
+    { "do": "resize", "cols": 120, "rows": 30 },
+    { "do": "press", "keys": ["Escape"] },
+    { "do": "wait_text", "text": "⊃ impl Default for MyStruct<i32>  impl trait", "timeout_ms": 3000 },
+    { "do": "type", "text": ":lua print('src-w='..vim.api.nvim_win_get_width(0))" }, { "do": "press", "keys": ["Enter"] },
+    { "do": "wait_text", "text": "src-w=", "timeout_ms": 3000 },
+    { "do": "expect_no_text", "text": "src-w=24" },
+    { "do": "capture", "name": "wide-120" },
+    { "do": "resize", "cols": 40, "rows": 14 },
+    { "do": "press", "keys": ["Escape"] },
+    { "do": "wait_text", "text": "use std::fmt::Dis", "timeout_ms": 3000 },
+    { "do": "capture", "name": "narrow-40" },
+    { "do": "type", "text": "ggOx" }, { "do": "press", "keys": ["Escape"] },
+    { "do": "type", "text": ":q" }, { "do": "press", "keys": ["Enter"] },
+    { "do": "wait_text", "text": "E37", "timeout_ms": 3000 },
+    { "do": "expect_text", "text": "qzss · lib.rs" },
+    { "do": "capture", "name": "modified-q-refused" },
+    { "do": "type", "text": ":q!" }, { "do": "press", "keys": ["Enter"] },
+    { "do": "wait_exit", "exit_code": 0, "timeout_ms": 5000 }
+  ]
+}

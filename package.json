@@ -1,0 +1,14 @@
+{
+  "name": "qzss-nvim-dev",
+  "private": true,
+  "description": "Development-only dependencies for qzss.nvim tests (real TypeScript language server E2E).",
+  "license": "MIT",
+  "scripts": {
+    "bootstrap": "sh scripts/bootstrap.sh",
+    "test": "sh scripts/test.sh"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "typescript-language-server": "5.1.3"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "launch": { "argv": ["env", "QZSS_SETUP={\"layout\":{\"width\":84,\"max_width\":84}}", "nvim", "--clean", "-u", "tests/minimal_init.lua", "tests/fixtures/rust/src/lib.rs"], "cols": 170, "rows": 40 },
+  "steps": [
+    { "do": "wait_text", "text": "pub trait Shape", "timeout_ms": 10000 },
+    { "do": "type", "text": ":Qzss" }, { "do": "press", "keys": ["Enter"] },
+    { "do": "wait_text", "text": "qzss · lib.rs · treesitter · ? help", "timeout_ms": 5000 },
+    { "do": "expect_text", "text": "⊃ impl Default for MyStruct<i32>  impl trait" },
+    { "do": "expect_text", "text": "⊃ impl<T> Shape<T> for MyStruct<T> where T: Copy + Display  impl trait" },
+    { "do": "expect_text", "text": "⊂ impl<T: Clone> MyStruct<T>  impl" },
+    { "do": "expect_text", "text": "≔ Output = T  assoc type" },
+    { "do": "expect_text", "text": "ƒ helper<U: Copy>(u: U) -> U  fn" },
+    { "do": "expect_text", "text": "ⓜ map<U, F>(self, f: F) -> MyStruct<U> where F: FnOnce(T) -> U  method" },
+    { "do": "expect_no_text", "text": "MyStruct for Default" },
+    { "do": "expect_style", "text": "impl trait", "style": { "italic": true } },
+    { "do": "capture", "name": "rust-expanded" },
+
+    { "do": "type", "text": "?" },
+    { "do": "wait_text", "text": "toggle fold", "timeout_ms": 3000 },
+    { "do": "expect_text", "text": ":help qzss" },
+    { "do": "press", "keys": ["Escape"] },
+    { "do": "wait_gone", "text": "close fold / parent", "timeout_ms": 3000 },
+
+    { "do": "type", "text": "/impl<T> Shape" }, { "do": "press", "keys": ["Enter"] },
+    { "do": "type", "text": "za" },
+    { "do": "wait_text", "text": "▸ ⊃ impl<T> Shape<T> for MyStruct<T> [+4] where T: Copy + Display  impl trait", "timeout_ms": 3000 },
+    { "do": "expect_no_text", "text": "ƒ helper<U: Copy>" },
+    { "do": "capture", "name": "folded" },
+
+    { "do": "press", "keys": ["Enter"] },
+    { "do": "type", "text": ":lua print('qzss-pos='..vim.fn.line('.')..':'..vim.fn.col('.')..' '..vim.fn.expand('%:t'))" },
+    { "do": "press", "keys": ["Enter"] },
+    { "do": "wait_text", "text": "qzss-pos=25:1 lib.rs", "timeout_ms": 3000 },
+
+    { "do": "type", "text": "ggOpub struct Added {}" }, { "do": "press", "keys": ["Escape"] },
+    { "do": "wait_text", "text": "◆ Added  struct", "timeout_ms": 5000 },
+    { "do": "expect_text", "text": "▸ ⊃ impl<T> Shape<T> for MyStruct<T> [+4]" },
+    { "do": "expect_no_text", "text": "ƒ helper<U: Copy>" },
+    { "do": "capture", "name": "after-edit-fold-kept" },
+    { "do": "type", "text": "u" },
+    { "do": "wait_gone", "text": "◆ Added  struct", "timeout_ms": 5000 },
+
+    { "do": "type", "text": ":QzssOpen" }, { "do": "press", "keys": ["Enter"] },
+    { "do": "type", "text": "zM" },
+    { "do": "wait_text", "text": "▸ ◈ Shape [+3] <T>  trait", "timeout_ms": 3000 },
+    { "do": "type", "text": "zR" },
+    { "do": "wait_text", "text": "ƒ helper<U: Copy>(u: U) -> U", "timeout_ms": 3000 },
+    { "do": "type", "text": "q" },
+    { "do": "wait_gone", "text": "qzss · lib.rs", "timeout_ms": 3000 },
+    { "do": "type", "text": ":qa!" }, { "do": "press", "keys": ["Enter"] },
+    { "do": "wait_exit", "exit_code": 0, "timeout_ms": 5000 }
+  ]
+}

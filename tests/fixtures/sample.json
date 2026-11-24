@@ -1,0 +1,9 @@
+{
+  "name": "qzss",
+  "version": 2,
+  "nested": {
+    "deep key": { "enabled": true, "ratio": 0.5 },
+    "list": [1, "two", { "three": null }]
+  },
+  "with \"quotes\"": "yes"
+}

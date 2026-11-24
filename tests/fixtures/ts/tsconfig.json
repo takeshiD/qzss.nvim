@@ -1,0 +1,1 @@
+{ "compilerOptions": { "strict": true, "jsx": "react", "target": "es2020", "noEmit": true }, "include": ["*.ts", "*.tsx"] }

@@ -1,0 +1,11 @@
+# Upstream investigation and implementation decision
+
+Inspected on 2026-11-24: [stevearc/aerial.nvim](https://github.com/stevearc/aerial.nvim), commit `28fe6e822ae344544c379d60fcb13c9519a1f08a`.
+
+Aerial is MIT licensed, copyright (c) 2020 Steven Arcangeli. A fork is legally possible provided its copyright and permission notice accompany copied or substantial portions. Its mature navigation and broad language coverage are useful advantages of a fork.
+
+The inspected [Rust query](https://github.com/stevearc/aerial.nvim/blob/28fe6e822ae344544c379d60fcb13c9519a1f08a/queries/rust/aerial.scm) captures an impl as Class, optional simple trait identifier, and a simple or generic self type's base identifier. That query alone does not preserve the full generic trait/self-type relationship or where clause. The [TypeScript query](https://github.com/stevearc/aerial.nvim/blob/28fe6e822ae344544c379d60fcb13c9519a1f08a/queries/typescript/aerial.scm) assigns Interface to type aliases as well as interfaces. The [JSON query](https://github.com/stevearc/aerial.nvim/blob/28fe6e822ae344544c379d60fcb13c9519a1f08a/queries/json/aerial.scm) selects object-valued pairs; the [YAML query](https://github.com/stevearc/aerial.nvim/blob/28fe6e822ae344544c379d60fcb13c9519a1f08a/queries/yaml/aerial.scm) selects block maps/sequences and specially named sequence entries. Those query defaults do not supply a complete scalar/index tree. These are observations of this revision, not claims that upstream callbacks cannot customize it.
+
+Decision: implement qzss independently, with a small semantic model focused on Rust, TypeScript/TSX, JSON and YAML. Distinct TypeAlias, trait/inherent impl, container and scalar kinds, source syntax signatures and persistent row identity are central requirements. Retrofitting all of those into a broad fork would carry unrelated backends and compatibility obligations. An independent implementation can explicitly reconcile syntax and LSP detail while keeping the requested scope small.
+
+Do not copy Aerial implementation or queries. Acknowledge it as inspiration. If subsequent implementation does copy any source, preserve its MIT copyright/permission notice and identify the copied files. Runtime parser and optional language-server dependencies must be documented separately from qzss's license.

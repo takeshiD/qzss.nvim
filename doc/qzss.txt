@@ -1,0 +1,205 @@
+*qzss.txt*   Semantic outline sidebar (Rust, TS/TSX, JSON, YAML)         *qzss*
+
+Author:  takeshiD
+License: MIT (see LICENSE)
+Requires: Neovim 0.11 or newer (tested on 0.12)
+
+==============================================================================
+CONTENTS                                                        *qzss-contents*
+
+  1. Introduction ........................................ |qzss-intro|
+  2. Requirements ........................................ |qzss-requirements|
+  3. Setup ............................................... |qzss-setup|
+  4. Commands ............................................ |qzss-commands|
+  5. Sidebar keys ........................................ |qzss-keys|
+  6. Options ............................................. |qzss-options|
+  7. Kinds ............................................... |qzss-kinds|
+  8. Highlights .......................................... |qzss-highlights|
+  9. Lua API ............................................. |qzss-api|
+ 10. Limitations ......................................... |qzss-limitations|
+
+==============================================================================
+1. INTRODUCTION                                                    *qzss-intro*
+
+qzss shows a symbol outline in a sidebar. It reads the buffer with
+Tree-sitter (structure and syntax signatures) and, when a language server is
+attached, merges LSP `DocumentSymbol.detail` into it or uses LSP alone.
+
+What it focuses on:
+- Rust impls read the way they are written: `impl Default for MyStruct`,
+  `impl<T> Shape<T> for MyStruct<T> where T: Copy + Display`, inherent
+  `impl<T: Clone> MyStruct<T>`, with associated items and nested fns.
+- Generics, type arguments and bounds are kept in signatures.
+- TypeScript/TSX class, interface and type alias are distinct kinds.
+- JSON/YAML show keys, array indexes, objects, scalars and quoted keys as a
+  tree using Tree-sitter only (no LSP needed). Whitespace inside quoted keys
+  and string literals, and inside YAML plain scalars, is preserved.
+- Folded rows keep their icon, name and kind and show `[+N]`.
+
+==============================================================================
+2. REQUIREMENTS                                             *qzss-requirements*
+
+- Neovim >= 0.11.
+- Tree-sitter parsers for the languages you use: `rust`, `typescript`,
+  `tsx`, `json`, `yaml` (e.g. from nvim-treesitter or your distribution).
+- Optional: a language server with `textDocument/documentSymbol`
+  (rust-analyzer, typescript-language-server). Without one, the Tree-sitter
+  outline is used. Without a parser, the LSP outline is used. With neither, the
+  sidebar shows a message explaining what is missing (see |:QzssInfo|).
+- Nerd Fonts are NOT required. The default icons are plain Unicode; an
+  ASCII-only preset exists.
+
+==============================================================================
+3. SETUP                                                           *qzss-setup*
+
+Calling setup is optional; the commands work with defaults. >lua
+    require("qzss").setup({
+      layout = { position = "right", width = 40, max_width = 80 },
+      icons = "unicode",            -- "unicode" | "ascii" | "nerd" | table
+      toggle_key = "<leader>o",
+    })
+<
+==============================================================================
+4. COMMANDS                                                     *qzss-commands*
+
+:Qzss                                                                  *:Qzss*
+    Toggle the outline sidebar for the current buffer.
+
+:QzssOpen[!]                                                       *:QzssOpen*
+    Open the sidebar and focus it. With [!] keep focus in the source window.
+
+:QzssClose                                                        *:QzssClose*
+    Close the sidebar.
+
+:QzssRefresh                                                    *:QzssRefresh*
+    Recompute the outline. Normally not needed: edits refresh automatically
+    after `update_delay` ms.
+
+:QzssFilter [{kind} ...]                                         *:QzssFilter*
+    Show only the given kinds (see |qzss-kinds|), e.g. >vim
+        :QzssFilter Class Interface TypeAlias
+<   Ancestors of matching symbols stay visible. Without arguments the filter
+    is cleared. Unknown kinds are rejected with an error.
+
+:QzssInfo                                                          *:QzssInfo*
+    Show the active source (treesitter, lsp, treesitter+lsp), attached LSP
+    clients and the last error.
+
+==============================================================================
+5. SIDEBAR KEYS                                                     *qzss-keys*
+
+Default mappings inside the sidebar (change them with `keymaps`):
+
+  <CR>            jump to the symbol (exact line and column)
+  p               preview: move the source cursor, keep focus in the sidebar
+  o  za  <Tab>    toggle fold
+  zo  l           open fold
+  zc  h           close fold, or close the parent when on a leaf/closed node
+  zR              open all
+  zM              close all
+  r               refresh
+  q               close the sidebar
+  ?               show the key help float
+
+The sidebar never takes more than max(columns - 30, columns / 2) columns,
+so the source stays usable on narrow terminals. It closes itself when it
+would be the last window of a tab, so `:q` in the last source window exits
+Neovim (or closes the tab).
+
+Fold and selection state are stored per source buffer by symbol identity
+(parent path + kind + name), so they survive edits and refreshes.
+
+==============================================================================
+6. OPTIONS                                                       *qzss-options*
+
+Defaults: >lua
+    {
+      backends = { "treesitter", "lsp" },
+      detail_source = "merge",   -- "merge" | "treesitter" | "lsp"
+      layout = { position = "right", width = 36, max_width = 64 },
+      icons = "unicode",         -- "unicode" | "ascii" | "nerd" | { Kind = "x" }
+      kind_labels = {},          -- { Interface = "iface" }, false hides labels
+      show_kind = true,
+      show_detail = true,
+      highlights = {},           -- { Class = "MyGroup", Detail = { fg = "#888888" } }
+      format_name = nil,         -- function(symbol, ctx) -> string
+      format_detail = nil,       -- function(symbol, ctx) -> string ("" hides)
+      get_icon = nil,            -- function(symbol, ctx) -> icon, hl_group?
+      filter = nil,              -- function(symbol, ctx) -> false to hide
+      filter_kinds = {},         -- { typescript = { "Class", "Interface" } }
+      collapse_level = nil,      -- collapse nodes deeper than this initially
+      follow_cursor = true,
+      update_delay = 150,
+      close_on_jump = false,
+      toggle_key = nil,
+      keymaps = { ... },         -- see |qzss-keys|; set a key to false to disable
+      max_detail = 48,           -- max characters of a value preview
+    }
+<
+`ctx` passed to callbacks is `{ bufnr, filetype, depth }`. A symbol has at
+least `name`, `kind`, `detail`, `lnum`, `col` (0-based byte column) and
+`children`; Rust impls also have `trait`, `self_type`, `type_params` and
+`where_clause`.
+
+`detail_source`:
+  "merge"       syntax signature; LSP detail only fills an empty signature.
+                Duplicate details (equal after whitespace/`fn` normalisation)
+                are shown once.
+  "treesitter"  syntax signature only.
+  "lsp"         LSP detail when present, else syntax signature.
+
+==============================================================================
+7. KINDS                                                           *qzss-kinds*
+
+Module Struct Enum EnumMember Trait Impl TraitImpl Function Method
+Constructor Field Property Constant Variable TypeAlias AssociatedType Class
+Interface Macro Object Array String Number Boolean Null Document
+
+`Impl` is an inherent impl, `TraitImpl` an `impl Trait for Type`. `Document`
+is used for multi-document YAML files.
+
+==============================================================================
+8. HIGHLIGHTS                                                 *qzss-highlights*
+
+Every kind has a group `Qzss{Kind}` linked to a classic group (e.g.
+`QzssClass` -> `Type`, `QzssInterface` -> `Structure`, `QzssTypeAlias` ->
+`Typedef`), so colors follow your colorscheme. Other groups:
+
+  QzssDetail      signature / value preview          (Comment)
+  QzssKindLabel   kind label at the end of the row   (Comment color, italic)
+  QzssFold        fold marker                        (Special)
+  QzssFoldCount   `[+N]` on folded rows              (Comment)
+  QzssKeyword     `impl` / `for` in Rust impls       (Keyword)
+  QzssTraitName   trait in a trait impl              (Special)
+  QzssSelfType    self type of an impl               (Type)
+
+Override with the `highlights` option (the `Qzss` prefix is optional) or by
+defining the groups in your colorscheme. Defaults are re-applied on
+|:colorscheme|; user overrides keep winning.
+
+==============================================================================
+9. LUA API                                                           *qzss-api*
+
+  require("qzss").setup(opts)
+  require("qzss").open({ focus = true }) / close() / toggle()
+  require("qzss").refresh(bufnr?)
+  require("qzss").get_symbols(bufnr)      Tree-sitter symbols (synchronous)
+  require("qzss").outline_lines(bufnr)    rendered lines (for scripts/tests)
+  require("qzss").set_filter({ "Class" })
+  require("qzss").info()
+
+==============================================================================
+10. LIMITATIONS                                               *qzss-limitations*
+
+- Languages: Rust, TypeScript, TSX, JSON/JSONC and YAML only. Other
+  filetypes use the LSP outline if a server is attached.
+- Rust macros that generate items are not expanded by Tree-sitter.
+- Only the first LSP client supporting documentSymbol is queried.
+- LSP-only mode uses the server's SymbolKind and detail. tsserver reports
+  `type` aliases as Variable and enum members as Constant; when the
+  TypeScript/TSX parser is installed qzss restores TypeAlias, Interface and
+  EnumMember from the syntax node at the symbol name. Symbols are re-sorted
+  into source order.
+- One sidebar per tabpage.
+
+ vim:tw=78:ts=8:ft=help:norl:

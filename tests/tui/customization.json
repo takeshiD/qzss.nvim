@@ -1,0 +1,29 @@
+{
+  "launch": {
+    "argv": ["env", "QZSS_SETUP={\"icons\":\"ascii\",\"kind_labels\":{\"Interface\":\"contract\",\"TypeAlias\":\"type alias\"},\"highlights\":{\"Interface\":{\"fg\":\"#50fa7b\"},\"TypeAlias\":{\"fg\":\"#ffb86c\"},\"Class\":{\"fg\":\"#8be9fd\"}},\"layout\":{\"width\":64,\"max_width\":64}}",
+      "nvim", "--clean", "-u", "tests/minimal_init.lua", "tests/fixtures/ts/sample.ts"],
+    "cols": 150, "rows": 30
+  },
+  "steps": [
+    { "do": "wait_text", "text": "export interface Shape", "timeout_ms": 10000 },
+    { "do": "type", "text": ":Qzss" }, { "do": "press", "keys": ["Enter"] },
+    { "do": "wait_text", "text": "- i Shape<T extends number = number>  contract", "timeout_ms": 5000 },
+    { "do": "expect_text", "text": "- = Pair<K, V> = { key: K; value: V }  type alias" },
+    { "do": "expect_text", "text": "- C Box<T> implements Shape<number>  class" },
+    { "do": "expect_no_text", "text": "ⓘ" },
+    { "do": "expect_style", "text": "Shape", "style": { "fg": "#50fa7b" } },
+    { "do": "expect_style", "text": "Pair", "style": { "fg": "#ffb86c" } },
+    { "do": "expect_style", "text": "Box", "style": { "fg": "#8be9fd" } },
+    { "do": "type", "text": "zM" },
+    { "do": "wait_text", "text": "+ C Box [+4] <T> implements Shape<number>  class", "timeout_ms": 3000 },
+    { "do": "capture", "name": "custom-ascii-folded" },
+    { "do": "type", "text": ":lua require('qzss').setup({ icons = 'unicode', format_name = function(s) return s.kind == 'Class' and ('class ' .. s.name) or nil end, get_icon = function(s) if s.kind == 'Interface' then return 'I>', 'DiagnosticOk' end end })" },
+    { "do": "press", "keys": ["Enter"] },
+    { "do": "type", "text": ":QzssRefresh" }, { "do": "press", "keys": ["Enter"] },
+    { "do": "wait_text", "text": "▸ I> Shape [+2] <T extends number = number>  interface", "timeout_ms": 3000 },
+    { "do": "expect_text", "text": "▸ © class Box [+4] <T> implements Shape<number>  class" },
+    { "do": "capture", "name": "callbacks" },
+    { "do": "type", "text": ":qa!" }, { "do": "press", "keys": ["Enter"] },
+    { "do": "wait_exit", "exit_code": 0, "timeout_ms": 5000 }
+  ]
+}

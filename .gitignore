@@ -1,0 +1,7 @@
+.kenshu/
+.research/
+.deps/
+node_modules/
+test-results/
+/tests/fixtures/rust/target/
+/doc/tags

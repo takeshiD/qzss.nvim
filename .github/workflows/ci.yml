@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: test (nvim ${{ matrix.nvim }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        nvim: [v0.11.5, stable, nightly]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: rhysd/action-setup-vim@v1
+        with:
+          neovim: true
+          version: ${{ matrix.nvim }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install tmux
+        run: sudo apt-get update && sudo apt-get install -y tmux
+
+      - name: Cache parsers and rust-analyzer
+        uses: actions/cache@v4
+        with:
+          path: .deps
+          key: deps-${{ runner.os }}-${{ hashFiles('scripts/bootstrap.sh') }}
+
+      - name: Bootstrap (Tree-sitter parsers, rust-analyzer)
+        run: sh scripts/bootstrap.sh
+
+      - name: Install typescript-language-server
+        run: npm ci
+
+      - name: Versions
+        run: |
+          nvim --version | head -1
+          .deps/bin/rust-analyzer --version
+          node_modules/.bin/typescript-language-server --version
+
+      - name: Unit / integration (headless)
+        run: sh scripts/test.sh unit
+
+      - name: Review regressions (literal whitespace, UTF-16 jump with real tsserver)
+        run: sh scripts/test.sh edge
+
+      - name: README configuration examples
+        run: sh scripts/test.sh readme
+
+      - name: Real language servers (rust-analyzer, typescript-language-server)
+        run: sh scripts/test.sh lsp
+
+      - name: Terminal UI E2E (tmux)
+        run: sh scripts/test.sh tui
+
+      - name: Help tags
+        run: sh scripts/test.sh help
+
+      - name: README screenshots are real captures in sync with the docs
+        run: sh scripts/test.sh images

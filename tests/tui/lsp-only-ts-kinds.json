@@ -1,0 +1,17 @@
+{
+  "launch": { "argv": ["env", "QZSS_LSP=1", "QZSS_SETUP={\"backends\":[\"lsp\"],\"layout\":{\"width\":50,\"max_width\":50}}", "nvim", "--clean", "-u", "tests/minimal_init.lua", "tests/fixtures/ts/sample.ts"], "cols": 140, "rows": 34 },
+  "steps": [
+    { "do": "wait_text", "text": "export interface Shape", "timeout_ms": 10000 },
+    { "do": "type", "text": ":Qzss" }, { "do": "press", "keys": ["Enter"] },
+    { "do": "wait_text", "text": "· lsp ·", "timeout_ms": 30000 },
+    { "do": "wait_text", "text": "≡ Pair", "timeout_ms": 30000 },
+    { "do": "expect_text", "text": "ⓘ Shape" },
+    { "do": "expect_text", "text": "© Box" },
+    { "do": "expect_text", "text": "· Red  variant" },
+    { "do": "expect_no_text", "text": "ν Pair" },
+    { "do": "expect_text", "text": "ⓘ Shape", "row": 1 },
+    { "do": "capture", "name": "lsp-only-kinds" },
+    { "do": "type", "text": ":qa!" }, { "do": "press", "keys": ["Enter"] },
+    { "do": "wait_exit", "exit_code": 0, "timeout_ms": 5000 }
+  ]
+}
