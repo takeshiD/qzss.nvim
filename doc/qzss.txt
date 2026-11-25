@@ -1,4 +1,4 @@
-*qzss.txt*   Semantic outline sidebar (Rust, TS/TSX, JSON, YAML)         *qzss*
+*qzss.txt*   Semantic outline sidebar/float (Rust, TS/TSX, JSON, YAML)   *qzss*
 
 Author:  takeshiD
 License: MIT (see LICENSE)
@@ -17,11 +17,13 @@ CONTENTS                                                        *qzss-contents*
   8. Highlights .......................................... |qzss-highlights|
   9. Lua API ............................................. |qzss-api|
  10. Limitations ......................................... |qzss-limitations|
+ 11. Float layout ........................................ |qzss-float|
 
 ==============================================================================
 1. INTRODUCTION                                                    *qzss-intro*
 
-qzss shows a symbol outline in a sidebar. It reads the buffer with
+qzss shows a symbol outline in a sidebar or a floating window
+(|qzss-float|). It reads the buffer with
 Tree-sitter (structure and syntax signatures) and, when a language server is
 attached, merges LSP `DocumentSymbol.detail` into it or uses LSP alone.
 
@@ -63,17 +65,29 @@ Calling setup is optional; the commands work with defaults. >lua
 4. COMMANDS                                                     *qzss-commands*
 
 :Qzss                                                                  *:Qzss*
-    Toggle the outline sidebar for the current buffer.
+    Toggle the outline for the current buffer, in `layout.mode` ("sidebar"
+    by default, or "float"). An open outline closes in either mode.
 
 :QzssOpen[!]                                                       *:QzssOpen*
-    Open the sidebar and focus it. With [!] keep focus in the source window.
+    Open the outline in `layout.mode` and focus it. With [!] keep focus in
+    the source window. When already open, the current mode is kept.
+
+:QzssFloat[!]                                                     *:QzssFloat*
+    Open the outline as a float (|qzss-float|), or switch an open sidebar to
+    a float keeping cursor row, folds and filter. With [!] keep focus in the
+    source window.
+
+:QzssSidebar[!]                                                 *:QzssSidebar*
+    Open the outline as a sidebar, or switch an open float to the sidebar.
+    With [!] keep focus in the source window.
 
 :QzssClose                                                        *:QzssClose*
-    Close the sidebar.
+    Close the outline (sidebar or float).
 
 :QzssRefresh                                                    *:QzssRefresh*
     Recompute the outline. Normally not needed: edits refresh automatically
-    after `update_delay` ms.
+    after `update_delay` ms, and reloading the buffer (`:edit`, `:edit!`),
+    renaming it or changing its filetype refreshes it right away.
 
 :QzssFilter [{kind} ...]                                         *:QzssFilter*
     Show only the given kinds (see |qzss-kinds|), e.g. >vim
@@ -98,7 +112,8 @@ Default mappings inside the sidebar (change them with `keymaps`):
   zR              open all
   zM              close all
   r               refresh
-  q               close the sidebar
+  q               close the outline
+  <Esc>           close the outline (float mode only, `keymaps.float_close`)
   ?               show the key help float
 
 The sidebar never takes more than max(columns - 30, columns / 2) columns,
@@ -116,7 +131,8 @@ Defaults: >lua
     {
       backends = { "treesitter", "lsp" },
       detail_source = "merge",   -- "merge" | "treesitter" | "lsp"
-      layout = { position = "right", width = 36, max_width = 64 },
+      layout = { mode = "sidebar", position = "right", width = 36,
+                 max_width = 64, float = { ... } },  -- |qzss-float|
       icons = "unicode",         -- "unicode" | "ascii" | "nerd" | { Kind = "x" }
       kind_labels = {},          -- { Interface = "iface" }, false hides labels
       show_kind = true,
@@ -130,7 +146,7 @@ Defaults: >lua
       collapse_level = nil,      -- collapse nodes deeper than this initially
       follow_cursor = true,
       update_delay = 150,
-      close_on_jump = false,
+      close_on_jump = false,     -- global; an explicit float option overrides it
       toggle_key = nil,
       keymaps = { ... },         -- see |qzss-keys|; set a key to false to disable
       max_detail = 48,           -- max characters of a value preview
@@ -180,13 +196,145 @@ defining the groups in your colorscheme. Defaults are re-applied on
 ==============================================================================
 9. LUA API                                                           *qzss-api*
 
-  require("qzss").setup(opts)
-  require("qzss").open({ focus = true }) / close() / toggle()
-  require("qzss").refresh(bufnr?)
-  require("qzss").get_symbols(bufnr)      Tree-sitter symbols (synchronous)
-  require("qzss").outline_lines(bufnr)    rendered lines (for scripts/tests)
-  require("qzss").set_filter({ "Class" })
-  require("qzss").info()
+`require("qzss")` (or `require("qzss.api")`) is the stable public API,
+version `require("qzss").api_version` = 1. Commands and outline keys call
+the same functions. Other `qzss.*` modules are private. Full reference with
+types, events and more examples: docs/api.md in the repository.
+
+Conventions:                                          *qzss-api-conventions*
+- Positions are `{ row, col }`: row 1-based, col 0-based byte column (as
+  |nvim_win_get_cursor()|). Ranges `{ start = pos, ["end"] = pos }` have an
+  exclusive end. LSP UTF-16/32 columns are already converted to bytes.
+- Every returned table and event payload is a copy; changing it never
+  changes qzss state, including legacy compute() callbacks and symbol_at().
+- current_symbol() also initializes tracking without setup(). Snapshot.stale
+  is evaluated when read or delivered; a returned copy does not update itself.
+- The open event precedes the initial symbols event. Subscribers may close
+  or replace the view, and reentrant refresh supersedes the older computation.
+- Symbols, folds and filter belong to a source buffer; the outline view
+  belongs to a tabpage. `bufnr` nil/0 = current buffer (or the outline's
+  source for refresh/filter/fold functions while an outline is open).
+- Wrong argument types raise "qzss.<fn>: ...". Runtime conditions return
+  `nil, "reason"` / `false, "reason"` or pass `err` to a callback.
+- Only |qzss.request_symbols()| is asynchronous.
+
+View:                                                          *qzss-api-view*
+  setup(opts?)                      |qzss-options|; raises on invalid layout
+  open({ mode?, focus? }) -> ok, err   open, or switch mode / retarget
+  close() -> boolean                close the current tab's outline
+  toggle(opts?) -> boolean
+  is_open({ mode? }) -> boolean
+  get_view({ tabpage? }) -> view|nil  { tabpage, mode, winid, bufnr,
+                                    source_bufnr, source_winid, focused,
+                                    cursor_symbol_id, filter, folded,
+                                    width, height }
+  info() -> string[]
+
+Symbols (no UI needed):                                     *qzss-api-symbols*
+  refresh(bufnr?)                   recompute now
+  get_snapshot(bufnr?) -> snapshot|nil, err     cache only; "not_ready"
+    snapshot = { bufnr, changedtick, stale, pending, source, error,
+                 lsp_error, filter, symbols }
+                                                     *qzss.request_symbols()*
+  request_symbols(bufnr?, cb) -> { cancel = fun(): boolean }
+    cb(err, snapshot) runs later, exactly once unless cancelled. Requests
+    at one changedtick share one computation; an LSP answer for outdated
+    text is dropped and recomputed. err: "invalid buffer", "buffer not
+    loaded", "buffer deleted", "buffer unloaded" (the last two whenever the
+    buffer goes away before cb runs, snapshot nil). cancel() returns true
+    until cb has run (then cb never runs), false afterwards.
+  find_symbol(bufnr?, id) -> symbol|nil, err
+  current_symbol({ bufnr?, winid?, row? }) -> symbol|nil, path|err
+    path = top-level ancestor .. symbol. "pending" starts a request.
+  jump_to(symbol|id, { bufnr?, winid?, focus? }) -> ok, err
+
+  symbol = { id, name, kind, detail, bufnr, depth, parent_id, pos, range,
+             children, source (always set), [trait, self_type, type_params,
+             where_clause, lsp_detail, lsp_kind] }
+
+Filter and folds:                                             *qzss-api-fold*
+  set_filter(kinds|nil, bufnr?) -> boolean   get_filter(bufnr?) -> list|nil
+  set_folded(id, folded, { bufnr? }) -> ok, err
+  get_folded(bufnr?) -> ids     open_all(bufnr?)     close_all(bufnr?)
+  Row actions (keys): jump({ preview? }), toggle_fold(), open_fold(),
+  close_fold(), help(). They return false when no outline is open.
+
+Events:                                                     *qzss-api-events*
+  subscribe(event, cb) -> id        unsubscribe(id) -> boolean
+  Events: "symbols" { bufnr, changedtick, source, error, lsp_error,
+  pending }, "open" { tabpage, mode, winid, bufnr, source_bufnr, focused },
+  "close" { tabpage, mode, source_bufnr, reason }, "mode" { tabpage, from,
+  to, winid, source_bufnr }, "state" { bufnr, what, filter, folded }, "*".
+  Callbacks run in order; events emitted inside a callback are queued
+  until the current dispatch ends; errors are reported with |vim.notify()|
+  and do not stop other subscribers; unsubscribing inside a callback is
+  safe.
+
+Legacy (kept): get_symbols(bufnr), outline_lines(bufnr), compute(),
+symbol_at(), render(), follow().
+
+Examples (each also in docs/api.md, run by tests/docs_examples.lua):
+
+Picker with the built-in |vim.ui.select()|: >lua
+    local function pick_symbol()
+      local qzss = require("qzss")
+      qzss.request_symbols(0, function(err, snap)
+        if err then
+          return
+        end
+        local items = {}
+        local function walk(list, prefix)
+          for _, s in ipairs(list) do
+            table.insert(items, { sym = s, label = prefix .. s.name })
+            walk(s.children, prefix .. s.name .. " › ")
+          end
+        end
+        walk(snap.symbols, "")
+        vim.ui.select(items, {
+          prompt = "Symbol",
+          format_item = function(it)
+            return ("%-10s %s"):format(it.sym.kind, it.label)
+          end,
+        }, function(choice)
+          if choice then
+            qzss.jump_to(choice.sym)
+          end
+        end)
+      end)
+    end
+    vim.keymap.set("n", "<leader>fs", pick_symbol, { desc = "Pick symbol (qzss)" })
+<
+Statusline breadcrumb: >lua
+    function _G.qzss_breadcrumb()
+      local _, path = require("qzss").current_symbol()
+      if type(path) ~= "table" then
+        return "" -- "pending", "no symbol", ...
+      end
+      local names = {}
+      for _, s in ipairs(path) do
+        table.insert(names, s.name)
+      end
+      return table.concat(names, " › ")
+    end
+    require("qzss").subscribe("symbols", function()
+      vim.cmd.redrawstatus()
+    end)
+    vim.o.statusline = "%f %{v:lua.qzss_breadcrumb()}%=%l,%c"
+<
+Toggle a "types only" filter: >lua
+    vim.keymap.set("n", "<leader>ot", function()
+      local qzss = require("qzss")
+      if qzss.get_filter() then
+        qzss.set_filter(nil)
+      else
+        qzss.set_filter({ "Class", "Interface", "TypeAlias", "Struct", "Enum", "Trait" })
+      end
+    end, { desc = "qzss: toggle types-only filter" })
+<
+Versioning: `api_version` changes only for incompatible changes (removed
+or changed functions, arguments, fields, events). Fields, options, events
+and functions may be added at any time. Private modules and `_` fields are
+not part of the API.
 
 ==============================================================================
 10. LIMITATIONS                                               *qzss-limitations*
@@ -194,12 +342,55 @@ defining the groups in your colorscheme. Defaults are re-applied on
 - Languages: Rust, TypeScript, TSX, JSON/JSONC and YAML only. Other
   filetypes use the LSP outline if a server is attached.
 - Rust macros that generate items are not expanded by Tree-sitter.
-- Only the first LSP client supporting documentSymbol is queried.
+- Only the first LSP client supporting documentSymbol is queried, with an
+  8 second timeout.
 - LSP-only mode uses the server's SymbolKind and detail. tsserver reports
   `type` aliases as Variable and enum members as Constant; when the
   TypeScript/TSX parser is installed qzss restores TypeAlias, Interface and
   EnumMember from the syntax node at the symbol name. Symbols are re-sorted
   into source order.
-- One sidebar per tabpage.
+- One outline (sidebar or float) per tabpage.
+- The float does not resize to its content; it uses the configured size.
+- `request_symbols()` cancel() drops the callback; the computation (and its
+  LSP request) still completes and updates the cache.
+
+==============================================================================
+11. FLOAT LAYOUT                                                  *qzss-float*
+
+Set `layout.mode = "float"` (or use |:QzssFloat|) to show the outline in a
+floating window. Options (defaults): >lua
+    require("qzss").setup({ layout = { mode = "float", float = {
+      relative = "editor",   -- "editor" | "win" (the source window)
+      width = 0.5,           -- cells (>= 1) or fraction (0 < x < 1)
+      height = 0.8,
+      position = "center",   -- center top bottom left right top-left
+                             -- top-right bottom-left bottom-right
+      row = nil, col = nil,  -- explicit top-left, overrides position
+      min_width = 20, max_width = nil, min_height = 5, max_height = nil,
+      border = "rounded", winblend = 0, zindex = 50,
+      title = true,          -- " qzss · <file> ", a string, or false
+      title_pos = "center",
+      close_on_jump = true,  -- "global": inherit the global close_on_jump
+    } } })
+<
+Sizes are the content size (without border). Sizes are clamped to
+[min, max] and then to what fits the reference area (editor without
+tabline/statusline/cmdline, or the source window for relative = "win"), so
+on a narrow terminal the float always fits; fitting wins over min_*. The
+float is re-placed on |VimResized|, |TabEnter| and (relative = "win")
+|WinResized|. Invalid values make setup() raise "qzss: invalid option".
+
+An explicitly supplied global close_on_jump is inherited by floats unless
+layout.float.close_on_jump is also supplied. The float option accepts true,
+false, or "global". A nil field is absent and cannot override a default.
+If the source window closes, a float uses another normal source window in
+the same tab (preferring the same buffer), or closes if none remains.
+
+Float specifics: <Esc> also closes it (`keymaps.float_close`), <CR> closes
+it after jumping (`layout.float.close_on_jump`), `p` previews without
+leaving it, closing returns focus to the source window, `:edit` inside it
+opens the file in the source window and closes the float. Folds, filter
+and the selected row are shared with the sidebar: switching with
+|:QzssSidebar| / |:QzssFloat| keeps them.
 
  vim:tw=78:ts=8:ft=help:norl:

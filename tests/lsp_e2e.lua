@@ -141,4 +141,66 @@ do
   vim.cmd("QzssClose")
 end
 
+-- Public API with the real servers (no UI) ----------------------------------
+do
+  vim.cmd("silent! %bwipeout!")
+  -- request before the server attached: Tree-sitter result first, then the
+  -- LspAttach refresh of the (now tracked) buffer publishes the merged model
+  vim.cmd("edit " .. root .. "/tests/fixtures/rust/src/lib.rs")
+  local buf = vim.api.nvim_get_current_buf()
+  local attached_at_request = lspb.available(buf)
+  local first
+  local sources = {}
+  local sub = qzss.subscribe("symbols", function(ev)
+    if ev.bufnr == buf then
+      table.insert(sources, tostring(ev.source) .. (ev.pending and "(pending)" or ""))
+    end
+  end)
+  qzss.request_symbols(buf, function(err, snap) first = { err, snap } end)
+  vim.wait(60000, function() return first ~= nil end, 50)
+  T.ok(first and first[1] == nil, "api: rust request resolved", first and first[1])
+  if not attached_at_request then
+    T.eq(first and first[2].source, "treesitter", "api: before LspAttach the request resolves with Tree-sitter symbols")
+  end
+  local merged = vim.wait(90000, function()
+    local s = qzss.get_snapshot(buf)
+    return s and s.source == "treesitter+lsp" and not s.pending
+  end, 100)
+  T.ok(merged, "api: rust-analyzer merge reaches the cache without UI (" .. table.concat(sources, ", ") .. ")")
+  qzss.unsubscribe(sub)
+  local snap = qzss.get_snapshot(buf)
+  local area = find(snap.symbols, function(s) return s.name == "area" and s.parent_id and s.parent_id:find("TraitImpl", 1, true) end)
+  T.ok(area and area.lsp_detail and area.lsp_kind == 6, "api: public symbol carries lsp_detail/lsp_kind from rust-analyzer", area and vim.inspect({ area.lsp_detail, area.lsp_kind }))
+  T.eq(area and area.source, "treesitter+lsp", "api: matched symbol source = treesitter+lsp")
+  T.eq(qzss.get_view(), nil, "api: no outline window was opened")
+  -- request after an edit: the server is asked again and the result matches the new text
+  vim.api.nvim_buf_set_lines(buf, 0, 0, false, { "pub fn added_by_api_test() {}" })
+  local second
+  qzss.request_symbols(buf, function(err, s) second = { err, s } end)
+  local pending_seen = qzss.get_snapshot(buf).pending
+  vim.wait(60000, function() return second ~= nil end, 50)
+  T.ok(pending_seen, "api: snapshot.pending while rust-analyzer answers")
+  T.eq(second and second[2].changedtick, vim.b[buf].changedtick, "api: result for the edited changedtick")
+  T.eq(second and second[2].symbols[1].name, "added_by_api_test", "api: new symbol present")
+  T.eq(second and second[2].source, "treesitter+lsp", "api: merged with the real server after the edit")
+  vim.api.nvim_buf_set_lines(buf, 0, 1, false, {})
+  vim.bo[buf].modified = false
+end
+
+-- wipe a TypeScript buffer while typescript-language-server is answering
+do
+  local buf = open("tests/fixtures/ts/sample.ts")
+  require("qzss.config").options.backends = { "lsp" }
+  vim.api.nvim_buf_set_lines(buf, 0, 0, false, { "export const wipeMe = 1;" })
+  local got
+  qzss.request_symbols(buf, function(err, s) got = { err, s } end)
+  T.ok(qzss.get_snapshot(buf) == nil or qzss.get_snapshot(buf).pending, "api: ts request in flight")
+  vim.cmd("bwipeout! " .. buf)
+  vim.wait(5000, function() return got ~= nil end, 20)
+  T.ok(got and got[1] == "buffer deleted" and got[2] == nil, "api: wipe while tsserver answers -> 'buffer deleted'", got and got[1])
+  vim.wait(1500)
+  T.eq(qzss._state.bufs[buf], nil, "api: no model resurrected by the late tsserver answer")
+  require("qzss.config").options.backends = { "treesitter", "lsp" }
+end
+
 T.finish()

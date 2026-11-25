@@ -83,6 +83,17 @@ const cases = [
   { name: 'yaml', file: 'sample.yaml', wait: 'quoted key' },
   { name: 'rust-folded', file: 'rust/src/lib.rs', wait: 'impl Default for MyStruct', fold: true, sourceLine: 19 },
   { name: 'custom-ascii', file: 'ts/sample.ts', wait: 'contract', custom: true },
+  // Float layout: fold the generic trait impl inside the float, then switch
+  // the same outline to the sidebar (fold and cursor row are kept).
+  {
+    name: 'float', file: 'rust/src/lib.rs', wait: 'impl Default for MyStruct', sourceLine: 19, open: '+QzssFloat',
+    actions: [['type', '/impl<T> Shape'], ['press', 'Enter'], ['type', 'za'], ['wait', '[+4]']],
+  },
+  {
+    name: 'float-to-sidebar', file: 'rust/src/lib.rs', wait: 'impl Default for MyStruct', sourceLine: 19, open: '+QzssFloat',
+    actions: [['type', '/impl<T> Shape'], ['press', 'Enter'], ['type', 'za'], ['wait', '[+4]'],
+      ['type', ':QzssSidebar'], ['press', 'Enter'], ['wait', 'qzss · lib.rs · treesitter']],
+  },
 ];
 const requested = process.argv.slice(2);
 for (const name of requested) {
@@ -99,10 +110,14 @@ for (const item of cases.filter(item => !requested.length || requested.includes(
       '--', 'env', 'QZSS_LSP=0', 'QZSS_SETUP={}', process.env.NVIM || 'nvim',
       '-u', 'tests/minimal_init.lua', `tests/fixtures/${item.file}`,
       '+set number', `+lua require("qzss").setup(${config})`,
-      ...(item.sourceLine ? [`+normal! ${item.sourceLine}Gzt`] : []), '+QzssOpen');
+      ...(item.sourceLine ? [`+normal! ${item.sourceLine}Gzt`] : []), item.open || '+QzssOpen');
     started = true;
     term('wait', '--name', item.name, item.wait, '--timeout', '10000');
     if (item.fold) term('type', '--name', item.name, 'zM');
+    for (const [kind, arg] of item.actions || []) {
+      if (kind === 'wait') term('wait', '--name', item.name, arg, '--timeout', '5000');
+      else term(kind, '--name', item.name, arg);
+    }
     const capture = term('capture', '--name', item.name, item.name);
     const artifacts = capture.record.artifacts;
     const sourceSvg = artifacts.find(path => path.endsWith('.svg'));

@@ -102,9 +102,50 @@ cmd "edit tests/fixtures/sample.yaml"
 check "yaml quoted key" "\" 'quoted key': yes  string"
 check "yaml flow sequence" "▾ [] b [2]  array"
 
+# --- float layout: switch from the sidebar, fold, switch back, <Esc> --------------
+cmd "QzssFloat"
+check "float border and title" "╭"
+check "float title shows the file" "qzss · sample.yaml"
+check "float footer shows source and help" "treesitter · ? help"
+check_absent "sidebar winbar gone after switching to float" "sample.yaml · treesitter"
+keys z M
+check "fold inside the float" "▸ {} nested"
+keys ":QzssSidebar" Enter
+check "switched back to the sidebar (winbar)" "│ qzss · sample.yaml"
+check "fold kept across the switch" "▸ {} nested"
+check_absent "float closed after the switch" "╭"
+keys ":QzssFloat" Enter
+check "float again" "╭"
+keys Escape
+sleep 0.3
+check_absent "<Esc> closes the float" "╭"
+check_absent "no outline left after <Esc>" "qzss · sample.yaml"
+cmd "QzssSidebar!"
+check "sidebar reopened" "│ qzss · sample.yaml"
+keys C-w l
+keys z R
+check "open all" "▾ {} nested {2}"
+keys C-w h
+
 # --- narrow terminal ------------------------------------------------------------
 T resize-window -t e2e -x 70 -y 20
 check "still rendered at 70 columns" "▾ {} nested {2}"
+
+# A focused window-relative float must repair its anchor when another plugin
+# closes the source window, without stealing focus or leaving a stale id.
+cmd "QzssClose"
+cmd 'lua require("qzss").setup({layout={float={relative="win"}}}); _G.qzss_anchor=vim.api.nvim_get_current_win()'
+cmd "vsplit tests/fixtures/ts/sample.ts"
+cmd "lua vim.api.nvim_set_current_win(_G.qzss_anchor)"
+cmd "QzssFloat"
+check "window-relative float opened" "qzss · sample.yaml"
+keys ':lua vim.api.nvim_win_close(require("qzss").get_view().source_winid,true)' Enter
+check "float retargeted after external source close" "qzss · sample.ts"
+keys ':lua local v=require("qzss").get_view(); print("anchor="..tostring(v.source_winid==vim.api.nvim_win_get_config(v.winid).win).." focus="..tostring(v.focused))' Enter
+check "anchor repaired and focus preserved" "anchor=true focus=true"
+keys ':QzssClose' Enter
+cmd 'lua print("source="..vim.bo.filetype.." windows="..#vim.api.nvim_tabpage_list_wins(0))'
+check "close returns to the surviving source" "source=typescript windows=1"
 
 cmd "qa!"
 echo

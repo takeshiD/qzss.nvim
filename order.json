@@ -1,104 +1,123 @@
 {
   "schema": "kenshu-loop/order@1",
-  "title": "qzss.nvim — semantic Neovim outline",
-  "summary": "aerial.nvim で不明瞭だった Rust impl/generics、TypeScript semantic kinds、JSON/YAML hierarchy、fold 表示を改善する小さな Neovim outline plugin。独立検収を経て OSS 公開可能な品質にする。",
+  "title": "qzss.nvim — floating outline and stable public Lua API",
+  "summary": "既存takeshiD/qzss.nvimにfloat表示とUI無しでも利用できる公開Lua APIを追加。既存互換と共有modelを保ち、豊富な実行可能examples、実TUI画像、独立検収を経てmainに公開。",
   "deliverable_type": "tui",
-  "context": "対象は /home/tkcd/ex_prog/ex_lua/qzss.nvim の新規リポジトリ。ユーザーは Neovim で Rust/TypeScript/TSX/JSON/YAML を編集する。現在 NixOS Linux、Neovim 0.12.6、Node 24.22.2、tmux/VHS/rust-analyzer が PATH 上にある。外部依存の取得を許可。作業は対象リポジトリ内に限定し依存は .deps 等へ配置。主担当は Codex gpt-6-astra。kenshu-loop が Claude のみ対応のためループの子は Claude Code。README 英語。CLI の隔離検証では HOME が空になるため .deps を除外されたコピー先でも setup から依存を復元できること。検収用起動コマンドを明確にする。\n継続発注: 初回 contractor が実装を約33分進めたが VHS の反復試行に時間が掛かったため、親が正式に中断して状況を更新した。既存実装と全要求を維持して続行すること。最初に docs/parent-review-notes.md を読むこと。親が再現した tests/edge_cases.lua は現状 4 pass / 5 fail: YAML quoted-key whitespace、TS literal-type whitespace、JSON string preview whitespace、実 TypeScript server の UTF-16→UTF-8 jump 不正。これらを修正し妥当な検査基準・回帰・CI に含める。通常 tests/run.lua は106 pass、実サーバ tests/lsp_e2e.lua は24 pass だった。補助Codexが scripts/capture-terminal.mjs と docs/images/terminal-*.png/SVG/raw JSON を完成済み（Rust/TS/TSX/JSON/YAML/fold/custom の7枚）。VHS の再試行は不要、この実画面PNGをREADMEへ埋め込む。撮影の再現は KENSHU_CLI=/home/tkcd/ex_prog/t3/kenshu-loop/skills/kenshu-loop/scripts/kenshu-loop.mjs node scripts/capture-terminal.mjs で約7秒、ソース安定後に再生成可能。既存PNGは実際のPTYであり架空画像ではない。kind label の既定 NonText は暗すぎるため themeに追従する読みやすいlinkへ改善し、画像を同期すること。未完成はREADME、help、LICENSE、CI、検査基準と証拠、上記回帰修正、および独立検収。既存成果を読み、残作業に集中する。新たな子エージェントは起動不要。GitHub公開は親担当。",
+  "context": "既存repo /home/tkcd/ex_prog/ex_lua/qzss.nvim。開始時clean、HEAD=origin/main。Neovim v0.12.6、Node >=22.18、既存.deps/node_modulesあり。英語README。主担当Codex gpt-6-astra。指定kenshu-loopは最新ローカルcheckout /home/tkcd/ex_prog/t3/kenshu-loop/skills/kenshu-loop/SKILL.md (edf57c92bfb4acf2eb8f6b28d0d08fb7b729eb04) と同梱CLI。ランナーはClaude Code対応。受注者は実装/docs/tests/画像/CIを担当、新たな子エージェントは不要。親は受注中ソース編集しない。旧.kenshu/orderは.research/previous-acceptance/に保存済み。旧docs/acceptance-evidence.mdは前回記録として維持、今回はdocs/float-api-acceptance.mdに記録。画像再現はKENSHU_CLI=/home/tkcd/ex_prog/t3/kenshu-loop/skills/kenshu-loop/scripts/kenshu-loop.mjs node scripts/capture-terminal.mjs。独立検収では契約境界/競合/focus/tab lifecycleを実際に試す。仕様の細部は要求内で合理的に決め根拠を残す。\n継続最終検収: 最初の実kenshu-loopは3ラウンド（2回差し戻し）でaccepted。記録は .research/float-api-cycle1/ に移動保存し、今回も実CLIで新規独立検収を行う。初期実装をやり直す必要はない。親レビューで追加修正済み: legacy compute/symbol_atのcopy境界、明示global close_on_jumpのfloat継承と\"global\" sentinel、float focus中の外部source closeでreanchor、open/mode/symbols callbackからのclose/refresh再入、current_symbol単独使用時の自動初期化、callback配送時stale再計算。詳細と根拠はdocs/float-api-acceptance.md末尾、tests/api_lifecycle_spec.lua、tests/api_bootstrap_spec.lua、tests/tui/float-external-source-close.json。受注者は既存全要求を維持して最終成果物を確認し検査基準/証拠を提出。旧REG1〜REG4の意味も基準に保持（新しいC番号でもよい）。独立検収者は上記修正を自身の利用シナリオで検証し、全要求とdocs/README画像/互換性を審査する。追加機能の拡張や別子の起動は不要。既存全suiteと12本のPTY scenario、Neovim 0.11.5を維持。親はこの最終ループ実行中にソース編集しない。全検収後だけ親がcommit/pushする。",
   "requirements": [
     {
       "id": "R1",
       "kind": "goal",
-      "text": "Rust impl の trait と self type の関係を正確に一目で識別できる。正しい impl Default for MyStruct、impl<T> Trait<T> for MyStruct<T> where ...、inherent impl を扱い、associated items と nested methods を表示。誤った語順 impl MyStruct for Default に依存しない。",
+      "text": "既存sidebarを既定のままlayout.mode=\"sidebar\"|\"float\"を提供。floatはrelative=\"editor\",width=0.5,height=0.8,position=\"center\",border=\"rounded\",winblend=0をベースに設計。整数/比率サイズ、editor/win相対、位置、title、最小最大サイズのサポートと制約を明記。狭い端末で安全にクランプしVimResizedに追従。",
       "must": true
     },
     {
       "id": "R2",
       "kind": "goal",
-      "text": "Rust/TypeScript の型・関数・impl のジェネリクス、型引数、境界を可能な範囲で意味を壊さず表示。LSP DocumentSymbol.detail と Tree-sitter の構文情報を適切に利用し、重複や不一致に対応。",
+      "text": ":Qzssは設定モードでtoggle、:QzssFloatと:QzssSidebarは明示モードで開き、開いたままモード切替可能。既存:QzssOpen[!]、Close、Refresh、Info、Filter、setup/configと従来公開関数の互換性を維持。",
       "must": true
     },
     {
       "id": "R3",
       "kind": "goal",
-      "text": "TypeScript と TSX の class/type alias/interface を別々の semantic kind として icons/labels/highlights/filters で区別する。",
+      "text": "sidebarとfloatは同じsemantic model、renderer、fold/filter/cursor stateを共有。モード切替で選択・fold・filterを保持し重複実装を避ける。両モードでsource cursor follow、jump、preview、refresh、foldが使える。",
       "must": true
     },
     {
       "id": "R4",
-      "kind": "goal",
-      "text": "JSON/YAML の key、array index、object/map、scalar、nested/quoted keys を階層表示。LSP なしの Tree-sitter で動作する。",
+      "kind": "usage",
+      "text": "Esc/qとclose_on_jumpは既存設定を尊重。float特有の既定値があるなら明記。previewはsource cursorを移動してoutline focusを維持。非フォーカスopenと適切なfocus復帰ができる。",
       "must": true
     },
     {
       "id": "R5",
-      "kind": "goal",
-      "text": "folded node でも kind/icon/name を保持して開閉状態を認識できる。cursor、正確なジャンプ、fold 操作と編集更新時の開閉/選択状態保持。",
+      "kind": "usage",
+      "text": "ソース窓close、外部WinClosed、タブ作成/切替/終了、source buffer変更/削除、outline内で:editした場合にも孤立窓・stale state・別タブの誤操作を残さない。",
       "must": true
     },
     {
       "id": "R6",
       "kind": "goal",
-      "text": "icons、symbol name、kind label、highlight を設定や callback で柔軟にカスタマイズ。視認性の良いデフォルト、colorscheme と整合し Nerd Font 不要の代替がある。README に実用的設定例。",
+      "text": "外部公開Lua APIをrequire(\"qzss\")またはrequire(\"qzss.api\")の明示的で一貫したfacadeとして設計・実装。既存関数互換を保ちcommands/keymaps/UI actionsと外部利用が同じ公開ユースケースを経由。循環依存を避けpublic APIが真実の源となる。private internalsとstable surfaceを明確に。",
       "must": true
     },
     {
       "id": "R7",
       "kind": "goal",
-      "text": "Neovim Lua plugin として setup、commands、keymaps、sidebar、source buffer への正確なジャンプ、buffer 編集更新、fallback と error handling が使える。",
+      "text": "外部プラグインがoutline UIを一切開かずsemantic symbolsを取得し独自UI/picker/statusline/keymapから使える。cached snapshotとasync requestを必要に応じ分離。TS/LSP更新、未準備/無効buffer、cancel、同一changedtickの多重request、古いresult、buffer編集/消去中の応答を安全に扱う。",
       "must": true
     },
     {
       "id": "R8",
       "kind": "constraint",
-      "text": "対応 Neovim version、runtime/development 外部依存、対応機能と制限を英語 README で明記。インストール、設定、commands、license を含む。",
+      "text": "API契約・Lua型注釈・引数・既定値・戻り値/エラー・同期/非同期・LSP更新タイミング・buffer/tab/window scopeを文書化し実装と一致。公開symbolはsource bufnr、children、kind/detail、位置とrangeの規約（行基数/byte列/端点）を明記。返却tree/model/stateを外部変更して内部状態が壊れない。",
       "must": true
     },
     {
       "id": "R9",
-      "kind": "constraint",
-      "text": "headless Neovim テストと実 terminal UI E2E を実行。Rust、TypeScript/TSX、JSON、YAML fixtures を用意し、Tree-sitter と LSP 経路を現実的に検証。実 rust-analyzer と TypeScript language server の E2E を含め、mock のみで実 server 検証済みとしない。CI workflow を整備。",
+      "kind": "goal",
+      "text": "coherentで過剰でないAPIとしてopen/close/toggle/is_open、view/state参照、refresh、symbols/current symbol、外部symbolへのjump、filter、fold操作を提供。名前やシグネチャは互換性と使い勝手を考え決定。無効入力と閉じたUIでの意味も明確に。",
       "must": true
     },
     {
       "id": "R10",
-      "kind": "constraint",
-      "text": "README に実際に起動した qzss.nvim の GIF または screenshot を必ず埋め込む。架空画像・mock は不可。再現用 script も同梱。VHS が不可なら tmux/terminal recorder/headless Neovim UI capture で代替。",
+      "kind": "goal",
+      "text": "更新/open/close等のイベントまたはsubscribe/unsubscribeを公開しpayload、購読解除、再入、利用者callbackのエラー処理を文書化。UI無しのカスタムUI更新用途が実際に動く。",
       "must": true
     },
     {
       "id": "R11",
-      "kind": "goal",
-      "text": "主要4言語および fold/customization を実画像で視覚的に示す。",
-      "must": false
+      "kind": "constraint",
+      "text": "docs/api.md referenceと:help qzss-api、README quick examples/リンクを充実。sidebar/float選択、custom float、keymaps、symbols取得と走査、vim.ui.selectで動く最小picker、statusline/breadcrumb、jump、購読によるカスタムUI更新、filterなど実用用途を網羅。標準API中心、外部依存例は明記。versioning/互換性方針も簡潔に。",
+      "must": true
     },
     {
       "id": "R12",
       "kind": "constraint",
-      "text": "aerial.nvim upstream 調査に基づいて fork/独立実装を決定し根拠を残す。docs/upstream-research.md と .research/aerial.nvim を参照してよい。license/copyright 遵守。無関係な機能を肥大化させない。",
+      "text": "ドキュメントの実際のコード例を実行するテストを用意し、例とコード/仕様の一致を独立検収で確認。説明のみ/形だけのassertで合格にしない。",
       "must": true
     },
     {
       "id": "R13",
       "kind": "constraint",
-      "text": "既存 kenshu-loop 手順で受注者自身が要求に対応する検査基準と証拠を提出し、独立検収者が基準の妥当性と UX/E2E を検証して差し戻し・修正する。未実行を合格にしない。",
+      "text": "README既存画像を維持し実際のqzss.nvim float TUIのスクショまたはGIF追加。kenshu-loop terminal driverとscripts/capture-terminal.mjsを活用し再現可能に、raw JSON/SVG/PNGを既存流儀で保存。floatの特徴を示す。可能ならsidebar/float切替も。README Limitations等も更新。",
       "must": true
     },
     {
       "id": "R14",
       "kind": "constraint",
-      "text": "他プロジェクトや global git config は変更しない。Git commit を行う場合は local user.name takeshiD と local user.email（親担当が authenticated GitHub profile で確認し設定済み）を使用し author/committer を確認。子担当は commit/push/repo作成をせず親担当に任せる。",
+      "text": "新規headless unit/API contract/integrationとreal PTY TUI scenarioでresize/focus/close/tabs/invalid source、LSP async、copy/error/reentrancyを検査。既存全suite(unit edge readme lsp tui help images)を回帰実行。実rust-analyzer/tsserver経路を保ちmockのみで実server検証済みとしない。",
       "must": true
     },
     {
       "id": "R15",
       "kind": "constraint",
-      "text": "納品には検査基準・結果・実行コマンド・実画像パス・未解決制限を記録。検収後、親担当が public takeshiD/qzss.nvim を安全に作成し main へ push、README画像とremote反映を確認し SHA/URL を報告する。検収対象は公開可能なローカル成果物でありリモート公開は親担当の後工程。",
+      "text": "既存CIに新規テスト/docs examples/TUIを追加。Neovim 0.11+、外部runtime依存追加なし。fresh isolated HOME/checkoutでsetupから開発依存を復元可能。",
+      "must": true
+    },
+    {
+      "id": "R16",
+      "kind": "constraint",
+      "text": "kenshu-loopで受注AI自身が検査基準/根拠/証拠を提出し独立検収が動作/API使い勝手/契約とdocs/既存互換/実画像を審査。不合格は修正・再検収。検収記録、テスト結果、既知制限、判断した仕様と理由を残す。未実行を合格にしない。",
+      "must": true
+    },
+    {
+      "id": "R17",
+      "kind": "constraint",
+      "text": "既存main c533126b940179cf340a40ff6f84dc4931e87195と作業内容を尊重。他プロジェクト/global git設定は変更せずrepo-local user.name takeshiDと既存確認済みemailを維持。子はcommit/pushをせず親に任せる。全commit author/committer takeshiD。",
+      "must": true
+    },
+    {
+      "id": "R18",
+      "kind": "constraint",
+      "text": "検収対象は公開可能なローカル成果物。検収後の親工程でmainに安全にpush(force禁止)、remote SHAとURL、可能なCI結果を確認し報告。検収者は親工程を未実行のまま実行済みと記録しない。",
       "must": true
     }
   ],
   "out_of_scope": [
-    "他プロジェクトの変更",
-    "aerial の全言語・全機能互換",
-    "子担当による remote 公開・認証情報アクセス"
+    "他プロジェクト/global設定変更",
+    "子によるcommit/push/認証情報アクセス",
+    "必須runtime依存追加",
+    "Telescope/Snacks必須依存化"
   ]
 }

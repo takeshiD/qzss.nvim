@@ -61,7 +61,13 @@ jobs:
       - name: Real language servers (rust-analyzer, typescript-language-server)
         run: sh scripts/test.sh lsp
 
-      - name: Terminal UI E2E (tmux)
+      - name: Public Lua API contract, float layout and lifecycle (headless)
+        run: sh scripts/test.sh api
+
+      - name: docs/api.md, README and :help qzss-api examples run and do what they say
+        run: sh scripts/test.sh docs
+
+      - name: Terminal UI E2E (tmux, sidebar + float)
         run: sh scripts/test.sh tui
 
       - name: Help tags

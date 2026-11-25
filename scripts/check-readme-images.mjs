@@ -17,7 +17,7 @@ const ok = (cond, msg) => {
 };
 
 const images = [...readme.matchAll(/!\[[^\]]+\]\((docs\/images\/[^)]+\.png)\)/g)].map(m => m[1]);
-ok(images.length >= 7, `README embeds ${images.length} PNG screenshots`);
+ok(images.length >= 9, `README embeds ${images.length} PNG screenshots`);
 
 const expected = {
   'terminal-rust-expanded': ['impl Default for MyStruct<i32>  impl trait', 'impl<T> Shape<T> for MyStruct<T> where T: Copy + Display', 'impl<T: Clone> MyStruct<T>  impl', 'helper<U: Copy>(u: U) -> U  fn'],
@@ -27,6 +27,13 @@ const expected = {
   'terminal-yaml': ["'quoted key': yes  string", '[] list [3]  array'],
   'terminal-rust-folded': ['▸ ⊃ impl<T> Shape<T> for MyStruct<T> [+4]', '▸ ◈ Shape [+3]'],
   'terminal-custom-ascii': ['[Shape]', 'contract', 'type alias'],
+  'terminal-float': ['╭', '─ qzss · lib.rs ─', 'treesitter · ? help ╯', '│▸ ⊃ impl<T> Shape<T> for MyStruct<T> [+4]', '│▾ ⊃ impl Default for MyStruct<i32>  impl trait'],
+  'terminal-float-to-sidebar': ['qzss · lib.rs · treesitter · ? help', '│▸ ⊃ impl<T> Shape<T> for MyStruct<T> [+4]'],
+};
+// text that must NOT be on a capture
+const absent = {
+  'terminal-float-to-sidebar': ['╭', '╯'],
+  'terminal-rust-expanded': ['╭'],
 };
 const NONTEXT = '#4f5258';
 
@@ -45,7 +52,10 @@ for (const rel of images) {
   const text = cap.screen.lines.join('\n');
   ok(text.includes('qzss · '), `${base}: captured screen shows the qzss sidebar`);
   for (const needle of expected[base] || []) ok(text.includes(needle), `${base}: shows "${needle}"`);
-  const sideCol = Math.max(...cap.styled.filter(s => s.text.includes('│')).map(s => s.col + [...s.text].indexOf('│')));
+  for (const needle of absent[base] || []) ok(!text.includes(needle), `${base}: does not show "${needle}"`);
+  // outline area: right of the sidebar separator, or inside the float's left border
+  const bars = cap.styled.filter(s => s.text.includes('│')).map(s => s.col + [...s.text].indexOf('│'));
+  const sideCol = base === 'terminal-float' ? Math.min(...bars) : Math.max(...bars);
   const labels = cap.styled.filter(s => s.col > sideCol && /^(impl trait|interface|type|class|struct|object|array|string|contract|type alias)$/.test(s.text.trim()));
   ok(labels.length > 0 && labels.every(s => s.style.fg !== NONTEXT && s.style.italic),
     `${base}: kind labels are italic and not NonText grey (${labels.length} spans)`);

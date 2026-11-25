@@ -1,0 +1,25 @@
+{
+  "launch": { "argv": ["env", "QZSS_EXAMPLES=picker,breadcrumb", "nvim", "--clean", "-u", "tests/minimal_init.lua", "-c", "luafile tests/tui/docs_api_demo.lua", "tests/fixtures/rust/src/lib.rs"], "cols": 100, "rows": 45 },
+  "steps": [
+    { "do": "wait_text", "text": "use std::fmt", "timeout_ms": 10000 },
+    { "do": "type", "text": "34G" },
+    { "do": "wait_text", "text": "lib.rs impl<T> Shape<T> for MyStruct<T> › area › helper", "timeout_ms": 5000 },
+    { "do": "expect_no_text", "text": "qzss · " },
+    { "do": "capture", "name": "breadcrumb" },
+    { "do": "type", "text": "gg" },
+    { "do": "wait_gone", "text": "› area › helper", "timeout_ms": 3000 },
+    { "do": "type", "text": "\\fs" },
+    { "do": "wait_text", "text": "Symbol", "timeout_ms": 5000 },
+    { "do": "expect_text", "text": "16: Function   impl<T> Shape<T> for MyStruct<T> › area › helper" },
+    { "do": "expect_text", "text": "1: Trait      Shape" },
+    { "do": "capture", "name": "picker" },
+    { "do": "type", "text": "16" }, { "do": "press", "keys": ["Enter"] },
+    { "do": "wait_text", "text": "33,12", "timeout_ms": 3000 },
+    { "do": "expect_text", "text": "› area › helper" },
+    { "do": "expect_no_text", "text": "qzss · " },
+    { "do": "type", "text": ":lua print(vim.api.nvim_get_current_line())" }, { "do": "press", "keys": ["Enter"] },
+    { "do": "wait_text", "text": "fn helper<U: Copy>(u: U) -> U", "timeout_ms": 3000 },
+    { "do": "type", "text": ":qa!" }, { "do": "press", "keys": ["Enter"] },
+    { "do": "wait_exit", "exit_code": 0, "timeout_ms": 5000 }
+  ]
+}

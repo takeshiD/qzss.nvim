@@ -8,6 +8,7 @@ if vim.fn.has("nvim-0.11") == 0 then
   return
 end
 
+-- Every command is a thin wrapper over the public API (require("qzss")).
 local function qzss()
   local q = require("qzss")
   if not q._did_setup then
@@ -20,10 +21,16 @@ local cmd = vim.api.nvim_create_user_command
 
 cmd("Qzss", function()
   qzss().toggle()
-end, { desc = "Toggle the qzss outline sidebar" })
+end, { desc = "Toggle the qzss outline (layout.mode)" })
 cmd("QzssOpen", function(a)
   qzss().open({ focus = not a.bang })
 end, { bang = true, desc = "Open the qzss outline (! keeps focus in the source)" })
+cmd("QzssFloat", function(a)
+  qzss().open({ mode = "float", focus = not a.bang })
+end, { bang = true, desc = "Open the outline as a float, or switch to float (! keeps focus)" })
+cmd("QzssSidebar", function(a)
+  qzss().open({ mode = "sidebar", focus = not a.bang })
+end, { bang = true, desc = "Open the outline as a sidebar, or switch to sidebar (! keeps focus)" })
 cmd("QzssClose", function()
   qzss().close()
 end, { desc = "Close the qzss outline" })

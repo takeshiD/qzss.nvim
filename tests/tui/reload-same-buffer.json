@@ -1,0 +1,198 @@
+{
+  "launch": {
+    "argv": [
+      "nvim",
+      "--clean",
+      "-u",
+      "tests/minimal_init.lua"
+    ],
+    "cols": 100,
+    "rows": 30
+  },
+  "steps": [
+    {
+      "do": "wait_text",
+      "text": "~",
+      "timeout_ms": 10000
+    },
+    {
+      "do": "type",
+      "text": ":Qzss"
+    },
+    {
+      "do": "press",
+      "keys": [
+        "Enter"
+      ]
+    },
+    {
+      "do": "wait_text",
+      "text": "no source",
+      "timeout_ms": 5000
+    },
+    {
+      "do": "type",
+      "text": ":wincmd p"
+    },
+    {
+      "do": "press",
+      "keys": [
+        "Enter"
+      ]
+    },
+    {
+      "do": "type",
+      "text": ":e tests/fixtures/rust/src/lib.rs"
+    },
+    {
+      "do": "press",
+      "keys": [
+        "Enter"
+      ]
+    },
+    {
+      "do": "wait_text",
+      "text": "qzss · lib.rs",
+      "timeout_ms": 3000
+    },
+    {
+      "do": "expect_text",
+      "text": "Shape<T>  trait"
+    },
+    {
+      "do": "expect_no_text",
+      "text": "no source"
+    },
+    {
+      "do": "type",
+      "text": ":QzssFloat"
+    },
+    {
+      "do": "press",
+      "keys": [
+        "Enter"
+      ]
+    },
+    {
+      "do": "wait_text",
+      "text": "╭",
+      "timeout_ms": 3000
+    },
+    {
+      "do": "expect_text",
+      "text": "qzss · lib.rs"
+    },
+    {
+      "do": "press",
+      "keys": [
+        "Escape"
+      ]
+    },
+    {
+      "do": "wait_gone",
+      "text": "╭",
+      "timeout_ms": 3000
+    },
+    {
+      "do": "type",
+      "text": ":enew"
+    },
+    {
+      "do": "press",
+      "keys": [
+        "Enter"
+      ]
+    },
+    {
+      "do": "type",
+      "text": ":QzssFloat!"
+    },
+    {
+      "do": "press",
+      "keys": [
+        "Enter"
+      ]
+    },
+    {
+      "do": "wait_text",
+      "text": "[No Name]",
+      "timeout_ms": 3000
+    },
+    {
+      "do": "type",
+      "text": ":e tests/fixtures/ts/sample.ts"
+    },
+    {
+      "do": "press",
+      "keys": [
+        "Enter"
+      ]
+    },
+    {
+      "do": "wait_text",
+      "text": "qzss · sample.ts",
+      "timeout_ms": 3000
+    },
+    {
+      "do": "expect_text",
+      "text": "Box<T>"
+    },
+    {
+      "do": "expect_no_text",
+      "text": "no source"
+    },
+    {
+      "do": "capture",
+      "name": "float-after-edit"
+    },
+    {
+      "do": "type",
+      "text": ":set filetype="
+    },
+    {
+      "do": "press",
+      "keys": [
+        "Enter"
+      ]
+    },
+    {
+      "do": "wait_text",
+      "text": "no Tree-sitter extractor for filetype",
+      "timeout_ms": 3000
+    },
+    {
+      "do": "type",
+      "text": ":set filetype=typescript"
+    },
+    {
+      "do": "press",
+      "keys": [
+        "Enter"
+      ]
+    },
+    {
+      "do": "wait_gone",
+      "text": "no Tree-sitter extractor",
+      "timeout_ms": 3000
+    },
+    {
+      "do": "expect_text",
+      "text": "© Box<T> implements Shape<number>  class"
+    },
+    {
+      "do": "type",
+      "text": ":qa!"
+    },
+    {
+      "do": "press",
+      "keys": [
+        "Enter"
+      ]
+    },
+    {
+      "do": "wait_exit",
+      "exit_code": 0,
+      "timeout_ms": 5000
+    }
+  ]
+}

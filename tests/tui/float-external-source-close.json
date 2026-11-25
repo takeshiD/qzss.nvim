@@ -1,0 +1,147 @@
+{
+  "launch": {
+    "argv": [
+      "nvim",
+      "--clean",
+      "-u",
+      "tests/minimal_init.lua",
+      "tests/fixtures/rust/src/lib.rs"
+    ],
+    "env": {
+      "QZSS_SETUP": "{\"layout\":{\"float\":{\"relative\":\"win\"}}}"
+    },
+    "cols": 120,
+    "rows": 30
+  },
+  "steps": [
+    {
+      "do": "wait_text",
+      "text": "use std::fmt",
+      "timeout_ms": 10000
+    },
+    {
+      "do": "type",
+      "text": ":lua _G.qzss_anchor = vim.api.nvim_get_current_win()"
+    },
+    {
+      "do": "press",
+      "keys": [
+        "Enter"
+      ]
+    },
+    {
+      "do": "type",
+      "text": ":vsplit tests/fixtures/ts/sample.ts"
+    },
+    {
+      "do": "press",
+      "keys": [
+        "Enter"
+      ]
+    },
+    {
+      "do": "type",
+      "text": ":lua vim.api.nvim_set_current_win(_G.qzss_anchor)"
+    },
+    {
+      "do": "press",
+      "keys": [
+        "Enter"
+      ]
+    },
+    {
+      "do": "type",
+      "text": ":QzssFloat"
+    },
+    {
+      "do": "press",
+      "keys": [
+        "Enter"
+      ]
+    },
+    {
+      "do": "wait_text",
+      "text": "qzss · lib.rs",
+      "timeout_ms": 5000
+    },
+    {
+      "do": "type",
+      "text": ":lua vim.api.nvim_win_close(require(\"qzss\").get_view().source_winid, true)"
+    },
+    {
+      "do": "press",
+      "keys": [
+        "Enter"
+      ]
+    },
+    {
+      "do": "wait_text",
+      "text": "qzss · sample.ts",
+      "timeout_ms": 5000
+    },
+    {
+      "do": "expect_text",
+      "text": "Box<T>"
+    },
+    {
+      "do": "type",
+      "text": ":lua local v=require(\"qzss\").get_view(); print(\"anchor=\"..tostring(v.source_winid==vim.api.nvim_win_get_config(v.winid).win)..\" focus=\"..tostring(v.focused))"
+    },
+    {
+      "do": "press",
+      "keys": [
+        "Enter"
+      ]
+    },
+    {
+      "do": "wait_text",
+      "text": "anchor=true focus=true",
+      "timeout_ms": 5000
+    },
+    {
+      "do": "capture",
+      "name": "reanchored"
+    },
+    {
+      "do": "press",
+      "keys": [
+        "Escape"
+      ]
+    },
+    {
+      "do": "wait_gone",
+      "text": "╭",
+      "timeout_ms": 5000
+    },
+    {
+      "do": "type",
+      "text": ":lua print(\"source=\"..vim.bo.filetype..\" windows=\"..#vim.api.nvim_tabpage_list_wins(0))"
+    },
+    {
+      "do": "press",
+      "keys": [
+        "Enter"
+      ]
+    },
+    {
+      "do": "wait_text",
+      "text": "source=typescript windows=1",
+      "timeout_ms": 5000
+    },
+    {
+      "do": "type",
+      "text": ":qa!"
+    },
+    {
+      "do": "press",
+      "keys": [
+        "Enter"
+      ]
+    },
+    {
+      "do": "wait_exit",
+      "exit_code": 0,
+      "timeout_ms": 5000
+    }
+  ]
+}
