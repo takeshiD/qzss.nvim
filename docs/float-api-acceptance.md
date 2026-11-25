@@ -238,3 +238,26 @@ Publication target: https://github.com/takeshiD/qzss.nvim (main). The parent
 will use a normal push, verify the remote SHA, and report the exact commit
 and GitHub CI result in the delivery response. Author and committer are
 `takeshiD`, using the pre-existing repo-local email.
+
+## Publication receipt
+
+The accepted implementation was published to `origin/main` with a normal
+(non-force) push as commit
+[`75be428a2c9ea61d37e4a3231bbd3bc1b4bbd937`](https://github.com/takeshiD/qzss.nvim/commit/75be428a2c9ea61d37e4a3231bbd3bc1b4bbd937).
+`git ls-remote origin refs/heads/main` returned that exact SHA. Both author and
+committer are `takeshiD`, using the unchanged repo-local email.
+
+[GitHub Actions run 45548870140](https://github.com/takeshiD/qzss.nvim/actions/runs/45548870140)
+completed successfully for **v0.11.5, stable and nightly**. The published float
+PNG was also fetched from GitHub at that commit (190831 bytes).
+This receipt is a documentation-only follow-up commit; no implementation,
+test, API contract or screenshot changed after acceptance.
+
+Non-blocking limitations remain as documented: one outline per tab, the first
+eligible LSP client only, an 8-second LSP timeout, and cancellation suppresses
+the callback rather than stopping the shared computation. The independently
+reproduced Neovim headless winbar/resize crash is isolated from the test suites;
+real PTY runs passed. Cosmetic folded-count placement can still put `[+N]`
+before a generic suffix. In event callbacks, pass the payload's source buffer
+explicitly to `get_snapshot` (`ev.bufnr` for `symbols`, `ev.source_bufnr` for
+view events), since its default is the current buffer.
